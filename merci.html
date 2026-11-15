@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102b45">
+<title>KREDITAS | Demande envoyée</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(135deg,#102b45,#1d527b);font-family:Arial,Helvetica,sans-serif;color:#26384a}
+.card{width:100%;max-width:620px;background:#fff;border-radius:20px;padding:42px 32px;text-align:center;box-shadow:0 20px 60px #071b2b55}
+.logo{font-size:30px;font-weight:900;letter-spacing:1px;color:#102b45}.logo span{color:#d9ad55}
+.check{width:76px;height:76px;border-radius:50%;background:#e8f5ed;color:#21834b;font-size:42px;display:grid;place-items:center;margin:25px auto}
+h1{font-size:30px;color:#102b45;margin:0 0 12px}p{line-height:1.7;color:#68798a}
+.btn{display:inline-block;margin-top:18px;padding:13px 23px;border-radius:9px;background:#d9ad55;color:#102b45;text-decoration:none;font-weight:800}
+.lang{margin-top:20px}.lang select{padding:10px;border:1px solid #d8e0e8;border-radius:8px}
+</style>
+</head>
+<body>
+<main class="card">
+ <div class="logo">KREDITAS<span>.</span></div>
+ <div class="check">✓</div>
+ <h1 id="title">Merci pour votre demande</h1>
+ <p id="message">Votre formulaire a été transmis. Votre demande devra être examinée. Cet accusé de réception ne constitue pas une approbation de crédit ni une promesse de financement.</p>
+ <p id="emailText">Pour toute question, vous pouvez écrire à contact@kreditas.online.</p>
+ <a class="btn" id="back" href="index.html">Retour au site</a>
+ <div class="lang"><label for="language" id="languageLabel">Langue : </label>
+ <select id="language">
+  <option value="fr">Français</option><option value="en">English</option><option value="lt">Lietuvių</option><option value="lb">Lëtzebuergesch</option><option value="lv">Latviešu</option><option value="it">Italiano</option><option value="de">Deutsch</option><option value="pt">Português</option><option value="ru">Русский</option><option value="uk">Українська</option><option value="ro">Română</option><option value="hr">Hrvatski</option>
+ </select></div>
+</main>
+<script>
+const messages={
+fr:["Merci pour votre demande","Votre formulaire a été transmis. Votre demande devra être examinée. Cet accusé de réception ne constitue pas une approbation de crédit ni une promesse de financement.","Pour toute question, vous pouvez écrire à contact@kreditas.online.","Retour au site","Langue : "],
+en:["Thank you for your application","Your form has been submitted. Your application must be reviewed. This receipt is not a credit approval or a promise of financing.","For questions, you can email contact@kreditas.online.","Back to website","Language: "],
+lt:["Dėkojame už paraišką","Jūsų forma išsiųsta. Paraiška turi būti įvertinta. Šis patvirtinimas nėra kredito suteikimas ar finansavimo pažadas.","Jei turite klausimų, rašykite contact@kreditas.online.","Grįžti į svetainę","Kalba: "],
+lb:["Merci fir Är Ufro","Äre Formulaire gouf geschéckt. Är Ufro muss nach gepréift ginn. Dës Bestätegung ass keng Kreditzusage a kee Finanzéierungsverspriechen.","Bei Froen: contact@kreditas.online.","Zréck op d'Websäit","Sprooch: "],
+lv:["Paldies par pieteikumu","Jūsu veidlapa ir nosūtīta. Pieteikums vēl ir jāizvērtē. Šis apstiprinājums nav kredīta apstiprinājums vai finansējuma solījums.","Jautājumu gadījumā rakstiet uz contact@kreditas.online.","Atpakaļ uz vietni","Valoda: "],
+it:["Grazie per la richiesta","Il modulo è stato inviato. La richiesta dovrà essere esaminata. Questa conferma non costituisce un'approvazione del credito né una promessa di finanziamento.","Per domande, scrivi a contact@kreditas.online.","Torna al sito","Lingua: "],
+de:["Vielen Dank für Ihre Anfrage","Ihr Formular wurde übermittelt. Ihr Antrag muss noch geprüft werden. Diese Bestätigung ist weder eine Kreditzusage noch ein Finanzierungsversprechen.","Bei Fragen schreiben Sie an contact@kreditas.online.","Zurück zur Website","Sprache: "],
+pt:["Obrigado pelo seu pedido","O formulário foi enviado. O pedido terá de ser analisado. Esta confirmação não constitui aprovação de crédito nem promessa de financiamento.","Para questões, escreva para contact@kreditas.online.","Voltar ao site","Idioma: "],
+ru:["Спасибо за вашу заявку","Форма отправлена. Заявка должна быть рассмотрена. Это подтверждение не является одобрением кредита или обещанием финансирования.","По вопросам пишите на contact@kreditas.online.","Вернуться на сайт","Язык: "],
+uk:["Дякуємо за вашу заявку","Форму надіслано. Заявка має бути розглянута. Це підтвердження не є схваленням кредиту чи обіцянкою фінансування.","З питаннями звертайтеся: contact@kreditas.online.","Повернутися на сайт","Мова: "],
+ro:["Vă mulțumim pentru cerere","Formularul a fost trimis. Cererea trebuie analizată. Această confirmare nu reprezintă aprobarea creditului sau o promisiune de finanțare.","Pentru întrebări, scrieți la contact@kreditas.online.","Înapoi la site","Limba: "],
+hr:["Hvala na zahtjevu","Obrazac je poslan. Zahtjev je potrebno pregledati. Ova potvrda nije odobrenje kredita niti obećanje financiranja.","Za pitanja pišite na contact@kreditas.online.","Povratak na web-stranicu","Jezik: "]
+};
+const select=document.getElementById('language');
+function apply(lang){const m=messages[lang]||messages.fr;document.documentElement.lang=lang;['title','message','emailText','back','languageLabel'].forEach((id,i)=>document.getElementById(id).textContent=m[i]);localStorage.setItem('kreditas-language',lang)}
+const saved=localStorage.getItem('kreditas-language')||'fr';select.value=messages[saved]?saved:'fr';apply(select.value);select.addEventListener('change',()=>apply(select.value));
+</script>
+</body></html>
