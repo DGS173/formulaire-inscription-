@@ -1,291 +1,359 @@
 <!DOCTYPE html>
-<html lang="fr" dir="ltr">
+<html lang="fr">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Demande de crédit</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
+<meta name="description" content="KREDITAS - Informations sur les solutions de financement et formulaire de demande.">
+<title>KREDITAS | Solutions de financement</title>
 <style>
 :root{
-  --bg:#EEF3F5; --card:#FFFFFF; --ink:#12202B; --muted:#5B6B77;
-  --line:#C9D4DB; --accent:#0F5C5A; --accent-ink:#FFFFFF; --err:#B3261E; --ok:#1B6B3A;
-}
-@media (prefers-color-scheme:dark){
-  :root{ --bg:#0E1A21; --card:#16262F; --ink:#E8EFF3; --muted:#9FB1BC;
-    --line:#2C424E; --accent:#3FB5AE; --accent-ink:#06201F; --err:#FF8A80; --ok:#7FDCA0; }
+--navy:#102b46;--blue:#1769aa;--gold:#d9ad55;
+--bg:#f3f6fa;--text:#293b4b;--muted:#6b7b89;--white:#fff;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  line-height:1.5;min-height:100vh}
-.top{display:flex;justify-content:flex-end;align-items:center;gap:.6rem;
-  padding:.8rem 1rem;background:var(--card);border-bottom:1px solid var(--line);
-  position:sticky;top:0;z-index:5}
-.top label{font-size:.85rem;color:var(--muted)}
-.top select{font:inherit;font-size:.95rem;padding:.45rem .6rem;border:1px solid var(--line);
-  border-radius:8px;background:var(--bg);color:var(--ink)}
-main{max-width:640px;margin:0 auto;padding:1.6rem 1rem 3rem}
-h1{font-size:clamp(1.7rem,6vw,2.3rem);font-weight:800;letter-spacing:-.02em;margin:.4rem 0 .4rem}
-.lead{color:var(--muted);margin:0 0 1.6rem}
-form{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.3rem}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.full{grid-column:1/-1}
-@media(max-width:520px){.grid{grid-template-columns:1fr}}
-.field label{display:block;font-weight:600;font-size:.92rem;margin-bottom:.3rem}
-input,select{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:var(--bg);
-  border:1px solid var(--line);border-radius:9px;padding:.7rem .75rem;min-height:46px}
-input:focus,select:focus,button:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
-.phone{display:flex;gap:.5rem}
-.phone select{flex:0 0 138px;width:138px}
-.phone input{flex:1;min-width:0}
-.amt{display:flex;gap:.5rem}
-.amt input{flex:1;min-width:0}
-.amt select,.amt .cur{flex:0 0 96px;width:96px}
-.amt .cur{display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--muted);font-weight:600}
-.hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
-button{width:100%;margin-top:1.3rem;font:inherit;font-weight:700;font-size:1.05rem;
-  background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;
-  padding:.9rem 1rem;min-height:50px;cursor:pointer}
-button[disabled]{opacity:.6;cursor:wait}
-.msg{display:none;margin-top:1rem;padding:.8rem 1rem;border-radius:9px;font-weight:600}
-.msg.ok{display:block;background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
-.msg.err{display:block;background:color-mix(in srgb,var(--err) 14%,transparent);color:var(--err)}
-.note{font-size:.82rem;color:var(--muted);margin-top:1rem}
-body::before{content:"";position:fixed;inset:0;z-index:-1;
-  background:linear-gradient(rgba(6,32,34,.55),rgba(6,32,34,.78)),
-    url("fond.jpg") center/cover no-repeat,
-    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 1200' preserveAspectRatio='xMidYMid slice'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%230F5C5A'/><stop offset='1' stop-color='%23091F24'/></linearGradient></defs><rect width='800' height='1200' fill='url(%23g)'/><g fill='%23ffffff' fill-opacity='.07'><rect x='60' y='820' width='90' height='300'/><rect x='190' y='720' width='90' height='400'/><rect x='320' y='610' width='90' height='510'/><rect x='450' y='490' width='90' height='630'/><rect x='580' y='360' width='90' height='760'/></g><g fill='none' stroke='%23F2C14E' stroke-opacity='.35' stroke-width='6'><circle cx='640' cy='170' r='70'/><circle cx='640' cy='170' r='48'/><circle cx='520' cy='250' r='56'/><circle cx='520' cy='250' r='36'/><circle cx='150' cy='330' r='80'/><circle cx='150' cy='330' r='56'/></g><path d='M40 1000 L200 880 L330 930 L470 720 L620 650 L760 480' fill='none' stroke='%23F2C14E' stroke-opacity='.55' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/cover no-repeat,#0B2E30}
-h1{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.45)}
-input[type=range]{padding:0;min-height:34px;border:0;background:transparent;accent-color:var(--accent);margin-top:.5rem}
-.rate{margin:.2rem 0 .8rem;font-size:.9rem;color:var(--muted)}
-.result{border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;background:var(--bg)}
-.result .big,.result .row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
-.result .big{font-weight:600;padding-bottom:.6rem;margin-bottom:.5rem;border-bottom:1px solid var(--line)}
-.result .big strong{font-size:1.7rem;font-weight:800;color:var(--accent)}
-.result .row{font-size:.95rem;padding:.15rem 0}
-[dir="rtl"] .top{justify-content:flex-start}
+body{margin:0;font-family:Arial,sans-serif;color:var(--text);background:var(--bg);line-height:1.65}
+header{background:#fff;box-shadow:0 2px 12px #00000010;position:sticky;top:0;z-index:10}
+.nav{max-width:1150px;margin:auto;padding:15px 22px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.logo{font-size:27px;font-weight:900;letter-spacing:2px;color:var(--navy)}
+.logo span{color:var(--gold)}
+nav{display:flex;gap:18px;flex-wrap:wrap}
+nav a{color:var(--navy);text-decoration:none;font-size:14px;font-weight:bold}
+select,input,textarea,button{font:inherit}
+select{padding:9px;border:1px solid #d7e0e9;border-radius:7px;background:#fff}
+.hero{background:linear-gradient(120deg,#102b46,#1769aa);color:white;padding:85px 22px}
+.hero-inner,.container,.footer-inner{max-width:1120px;margin:auto}
+.hero h1{font-size:clamp(32px,5vw,52px);line-height:1.15;max-width:750px;margin:0 0 18px}
+.hero p{font-size:18px;max-width:700px;color:#e1eaf2}
+.btn{display:inline-block;background:var(--gold);color:#172b3e;padding:13px 23px;border:0;border-radius:7px;text-decoration:none;font-weight:bold;cursor:pointer}
+.container{padding:55px 22px}
+h2{color:var(--navy);font-size:30px;margin:0 0 12px}
+.intro{max-width:780px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:20px;margin-top:25px}
+.card,.box{background:#fff;border-radius:12px;padding:25px;box-shadow:0 5px 22px #102b460d}
+.card h3{color:var(--navy);margin-top:0}
+.card p{color:var(--muted)}
+.card .tag{display:inline-block;background:#edf4fa;color:var(--blue);padding:5px 10px;border-radius:20px;font-size:12px;font-weight:bold}
+.card a{color:var(--blue);font-weight:bold;text-decoration:none}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+label{display:block;margin:15px 0 6px;color:var(--navy);font-weight:bold}
+input,textarea{width:100%;padding:12px;border:1px solid #d7e0e9;border-radius:7px;background:white}
+textarea{min-height:100px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:2px solid #a9cce8}
+.result{background:#edf5fc;padding:18px;border-radius:8px;margin-top:20px;color:var(--navy)}
+.result strong{font-size:25px}
+.note{font-size:13px;color:var(--muted)}
+.consent{display:flex;gap:10px;align-items:flex-start;font-weight:normal}
+.consent input{width:auto;margin-top:7px}
+.company-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.company-item{background:#f2f6fa;padding:15px;border-radius:8px}
+.company-item small{display:block;color:var(--muted)}
+.notice{background:#fff8e9;border-left:4px solid var(--gold);padding:15px;border-radius:6px;margin:20px 0}
+footer{background:var(--navy);color:white;padding:35px 22px}
+footer p{font-size:13px;color:#d5e0e9}
+footer a{color:white}
+@media(max-width:700px){
+.nav{align-items:flex-start}.nav-right{display:flex;gap:12px;flex-wrap:wrap}
+nav{gap:12px}.container{padding:38px 17px}.hero{padding:60px 20px}
+.two{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
-<div class="top">
-  <label for="lang" id="langLabel">Langue</label>
-  <select id="lang" aria-label="Language">
-    <option value="fr">Français</option>
-    <option value="en">English</option>
-    <option value="lt">Lietuvių</option>
-    <option value="lb">Lëtzebuergesch</option>
-    <option value="lv">Latviešu</option>
-    <option value="it">Italiano</option>
-    <option value="de">Deutsch</option>
-    <option value="pt">Português</option>
-    <option value="ru">Русский</option>
-    <option value="uk">Українська</option>
-    <option value="ro">Română</option>
-    <option value="hr">Hrvatski</option>
-  </select>
+
+<header>
+<div class="nav">
+<div class="logo">KREDITAS<span>.</span></div>
+<div class="nav-right">
+<nav>
+<a href="#accueil" data-t="home">Accueil</a>
+<a href="#prets" data-t="loans">Nos prêts</a>
+<a href="#simulation" data-t="sim">Simulation</a>
+<a href="#demande" data-t="request">Demande</a>
+<a href="#societe" data-t="company">Société</a>
+</nav>
+<select id="language" aria-label="Language">
+<option value="fr">Français</option><option value="en">English</option>
+<option value="lt">Lietuvių</option><option value="lb">Lëtzebuergesch</option>
+<option value="lv">Latviešu</option><option value="it">Italiano</option>
+<option value="de">Deutsch</option><option value="pt">Português</option>
+<option value="ru">Русский</option><option value="uk">Українська</option>
+<option value="ro">Română</option><option value="hr">Hrvatski</option>
+</select>
 </div>
+</div>
+</header>
+
 <main>
-  <h1 id="title"></h1>
-  <form id="form" novalidate>
-    <div class="grid">
-      <div class="field full">
-        <label for="montant" id="l_montant"></label>
-        <div class="amt">
-          <input id="montant" type="number" inputmode="decimal" min="1000" max="800000" step="any" value="5000" required>
-          <select id="devise" aria-label="Currency"><option>EUR</option><option>GBP</option><option>CHF</option><option>SEK</option><option>NOK</option><option>DKK</option><option>PLN</option><option>CZK</option><option>HUF</option><option>RON</option><option>BGN</option><option>ISK</option><option>RSD</option><option>UAH</option><option>TRY</option><option>MDL</option><option>ALL</option><option>MKD</option><option>BAM</option><option>GEL</option></select>
-        </div>
-        <input id="montantRange" type="range" min="1000" max="800000" step="1000" value="5000" aria-label="Amount">
-      </div>
-      <div class="field full">
-        <label for="duree"><span id="l_duree"></span> : <b id="dureeOut"></b></label>
-        <input id="duree" type="range" min="1" max="35" step="1" value="2">
-        <p class="rate" id="taux"></p>
-        <div class="result" aria-live="polite">
-          <div class="big"><span id="l_mensu"></span><strong id="o_mensu"></strong></div>
-          <div class="row"><span id="l_total"></span><strong id="o_total"></strong></div>
-          <div class="row"><span id="l_interets"></span><strong id="o_int"></strong></div>
-        </div>
-      </div>
-      <div class="field full">
-        <label for="salaire" id="l_salaire"></label>
-        <div class="amt">
-          <input id="salaire" type="number" inputmode="decimal" min="0" step="any" required>
-          <div class="cur" id="cur2">EUR</div>
-        </div>
-      </div>
-      <div class="field"><label for="nom" id="l_nom"></label>
-        <input id="nom" type="text" autocomplete="family-name" required></div>
-      <div class="field"><label for="prenom" id="l_prenom"></label>
-        <input id="prenom" type="text" autocomplete="given-name" required></div>
-      <div class="field"><label for="pays" id="l_pays"></label>
-        <select id="pays" required></select></div>
-      <div class="field"><label for="ville" id="l_ville"></label>
-        <input id="ville" type="text" autocomplete="address-level2" required></div>
-      <div class="field full"><label for="job" id="l_job"></label>
-        <input id="job" type="text" autocomplete="organization-title" required></div>
-      <div class="field full">
-        <label for="tel" id="l_tel"></label>
-        <div class="phone">
-          <select id="indicatif" aria-label="Country code"></select>
-          <input id="tel" type="tel" inputmode="tel" autocomplete="tel-national" required>
-        </div>
-      </div>
-      <div class="field full"><label for="email" id="l_email"></label>
-        <input id="email" type="email" autocomplete="email" required></div>
-    </div>
-    <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
-    <button type="submit" id="btn"></button>
-    <div id="msg" class="msg" role="status" aria-live="polite"></div>
-  </form>
+<section class="hero" id="accueil">
+<div class="hero-inner">
+<h1 data-t="hero">Des solutions de financement pour accompagner vos projets</h1>
+<p data-t="heroText">Consultez les informations sur les différents types de financement, réalisez une simulation indicative et préparez votre demande.</p>
+<a href="#demande" class="btn" data-t="start">Préparer une demande</a>
+</div>
+</section>
+
+<section class="container" id="prets">
+<h2 data-t="loanTitle">Nos solutions de financement</h2>
+<p class="intro" data-t="loanIntro">Découvrez les principales catégories de financement. L'éligibilité, les taux, les frais et les durées doivent être confirmés dans une offre écrite avant tout engagement.</p>
+
+<div class="cards">
+<article class="card">
+<span class="tag" data-t="personalTag">Financement personnel</span>
+<h3 data-t="personal">Prêt personnel</h3>
+<p data-t="personalText">Peut servir à financer des dépenses personnelles, un projet familial, des travaux ou un besoin ponctuel. Le montant et la durée dépendent de l'étude du dossier.</p>
+<a href="#demande" data-t="apply">Préparer une demande →</a>
+</article>
+<article class="card">
+<span class="tag" data-t="autoTag">Véhicule</span>
+<h3 data-t="auto">Prêt automobile</h3>
+<p data-t="autoText">Financement destiné à l'achat d'un véhicule neuf ou d'occasion. Le dossier peut nécessiter des informations sur le véhicule et le prix d'achat.</p>
+<a href="#demande" data-t="apply">Préparer une demande →</a>
+</article>
+<article class="card">
+<span class="tag" data-t="homeTag">Immobilier</span>
+<h3 data-t="homeLoan">Prêt immobilier</h3>
+<p data-t="homeText">Financement pouvant concerner l'achat, la construction ou certains travaux immobiliers. Une évaluation approfondie du projet et des garanties peut être nécessaire.</p>
+<a href="#demande" data-t="apply">Préparer une demande →</a>
+</article>
+<article class="card">
+<span class="tag" data-t="businessTag">Entreprise</span>
+<h3 data-t="business">Prêt professionnel</h3>
+<p data-t="businessText">Financement destiné aux besoins d'une activité professionnelle : équipement, trésorerie, développement ou investissement. Des justificatifs professionnels peuvent être demandés.</p>
+<a href="#demande" data-t="apply">Préparer une demande →</a>
+</article>
+<article class="card">
+<span class="tag" data-t="studentTag">Études</span>
+<h3 data-t="student">Prêt étudiant</h3>
+<p data-t="studentText">Financement pouvant contribuer aux frais de formation, de scolarité, de matériel ou de vie étudiante, sous réserve des conditions applicables.</p>
+<a href="#demande" data-t="apply">Préparer une demande →</a>
+</article>
+</div>
+
+<div class="notice">
+<strong data-t="important">Information importante :</strong>
+<span data-t="importantText">La présentation de ces catégories ne signifie pas que chaque produit est actuellement proposé ou qu'une demande sera acceptée. Les conditions officielles doivent être vérifiées avant publication.</span>
+</div>
+</section>
+
+<section class="container" id="simulation">
+<h2 data-t="simTitle">Simulateur de financement</h2>
+<p class="intro" data-t="simIntro">Estimez une simple répartition du montant demandé sur la durée choisie.</p>
+<div class="box">
+<div class="two">
+<div><label for="amount" data-t="amount">Montant souhaité (€)</label><input id="amount" type="number" min="100" max="1000000" value="10000"></div>
+<div><label for="months" data-t="duration">Durée (mois)</label><input id="months" type="number" min="1" max="360" value="36"></div>
+</div>
+<div class="result"><span data-t="monthly">Répartition mensuelle indicative :</span><br><strong id="monthly">277,78 €</strong></div>
+<p class="note" data-t="simNote">Calcul simplifié : montant divisé par le nombre de mois. Cette simulation n'est pas une offre de crédit. Elle ne tient compte d'aucun taux, intérêt, frais, assurance ou autre coût.</p>
+</div>
+</section>
+
+<section class="container" id="demande">
+<h2 data-t="formTitle">Formulaire de demande de financement</h2>
+<p class="intro" data-t="formIntro">Indiquez les informations nécessaires pour présenter votre projet. Une demande ne constitue pas une approbation de crédit.</p>
+<div class="box">
+<form id="loanForm">
+<div class="two">
+<div>
+<label for="fullname" data-t="name">Nom et prénom</label>
+<input id="fullname" required maxlength="100" autocomplete="name">
+</div>
+<div>
+<label for="email" data-t="email">Adresse e-mail</label>
+<input id="email" type="email" required maxlength="150" autocomplete="email">
+</div>
+<div>
+<label for="country" data-t="country">Pays de résidence</label>
+<input id="country" required maxlength="100" autocomplete="country-name">
+</div>
+<div>
+<label for="phone" data-t="phone">Téléphone (facultatif)</label>
+<input id="phone" type="tel" maxlength="30" autocomplete="tel">
+</div>
+<div>
+<label for="type" data-t="type">Type de financement</label>
+<select id="type" required>
+<option value="Prêt personnel" data-t="personal">Prêt personnel</option>
+<option value="Prêt automobile" data-t="auto">Prêt automobile</option>
+<option value="Prêt immobilier" data-t="homeLoan">Prêt immobilier</option>
+<option value="Prêt professionnel" data-t="business">Prêt professionnel</option>
+<option value="Prêt étudiant" data-t="student">Prêt étudiant</option>
+</select>
+</div>
+<div>
+<label for="requestAmount" data-t="requested">Montant souhaité (€)</label>
+<input id="requestAmount" type="number" min="100" max="1000000" required>
+</div>
+<div>
+<label for="term" data-t="desiredTerm">Durée souhaitée (mois)</label>
+<input id="term" type="number" min="1" max="360" required>
+</div>
+</div>
+<label for="purpose" data-t="purpose">Objet de la demande / Description du projet</label>
+<textarea id="purpose" maxlength="1500" required></textarea>
+<label class="consent"><input type="checkbox" id="consent" required><span data-t="consent">J'accepte que les informations ci-dessus soient utilisées pour répondre à ma demande. J'ai pris connaissance de la politique de confidentialité.</span></label>
+<p class="note" data-t="privacy">Ne transmettez jamais de numéro de carte bancaire, de mot de passe, de code PIN ou de code de validation. Évitez d'inclure des documents sensibles dans un e-mail ordinaire.</p>
+<button type="submit" class="btn" data-t="send">Préparer l'envoi de la demande</button>
+<p id="formMessage" role="status" aria-live="polite"></p>
+</form>
+</div>
+</section>
+
+<section class="container" id="societe">
+<h2 data-t="companyTitle">Informations sur la société</h2>
+<div class="box">
+<div class="company-grid">
+<div class="company-item"><small data-t="legal">Dénomination sociale communiquée</small><strong>E. kreditas, UAB</strong></div>
+<div class="company-item"><small data-t="code">Code de société communiqué</small><strong>304238386</strong></div>
+<div class="company-item"><small data-t="address">Adresse communiquée</small><strong>Ulonų g. 5, LT-08240 Vilnius, Lithuania</strong></div>
+<div class="company-item"><small data-t="established">Date de création communiquée</small><strong>29 avril 2016</strong></div>
+<div class="company-item"><small data-t="turnover">Chiffre d'affaires 2025 communiqué</small><strong>18 605 €</strong></div>
+<div class="company-item"><small data-t="director">Directrice communiquée</small><strong>Elena Skersene</strong></div>
+</div>
+<p class="note" data-t="verify">Ces informations ont été fournies pour la création de cette page. Elles doivent être vérifiées dans les registres officiels. Leur affichage ne prouve ni l'identité de l'exploitant du site ni son autorisation à proposer des crédits.</p>
+</div>
+</section>
+
+<section class="container">
+<h2 data-t="contactTitle">Contact</h2>
+<div class="box">
+<p><strong>KREDITAS</strong></p>
+<p><span data-t="emailContact">Adresse e-mail de contact :</span>
+<a href="mailto:lapatience195@gmail.com">lapatience195@gmail.com</a></p>
+<p class="note" data-t="contactNote">Pour toute demande, utilisez l'adresse de contact indiquée. N'envoyez pas de données bancaires confidentielles par e-mail.</p>
+</div>
+</section>
 </main>
+
+<footer>
+<div class="footer-inner">
+<div class="logo" style="color:white">KREDITAS<span>.</span></div>
+<p data-t="footer">Les informations présentées sont générales. Une simulation n'est pas une offre de crédit, une approbation ou une garantie de financement. Les conditions contractuelles et les autorisations réglementaires doivent être vérifiées.</p>
+<p>© <span id="year"></span> KREDITAS. <span data-t="rights">Tous droits réservés.</span></p>
+</div>
+</footer>
+
 <script>
-const DESTINATION_EMAIL = "lapatience195@gmail.com";
-const KEYS = "langLabel|title|montant|salaire|nom|prenom|pays|ville|job|tel|email|choose|btn|sending|ok|err|invalid|duree|mois|taux|mensu|total|interets".split("|");
-const T = {
-  fr:"Langue|Demande de crédit|Montant dont vous avez besoin|Salaire mensuel|Nom de famille|Prénom|Pays|Ville|Profession|Numéro de téléphone|Adresse email|Choisir un pays|Envoyer ma demande|Envoi en cours…|Merci ! Votre demande a bien été envoyée.|L’envoi a échoué. Vérifiez votre connexion et réessayez.|Veuillez remplir tous les champs correctement.|Durée du prêt|ans|Taux d’intérêt : 2 % par an|Mensualité|Total à rembourser|Dont intérêts",
-  en:"Language|Loan application|Amount you need|Monthly salary|Last name|First name|Country|City|Occupation|Phone number|Email address|Select a country|Send my request|Sending…|Thank you! Your request has been sent.|Sending failed. Check your connection and try again.|Please fill in all fields correctly.|Loan term|years|Interest rate: 2% per year|Monthly payment|Total to repay|Of which interest",
-  lt:"Kalba|Paskolos prašymas|Jums reikalinga suma|Mėnesinis atlyginimas|Pavardė|Vardas|Šalis|Miestas|Profesija|Telefono numeris|El. pašto adresas|Pasirinkite šalį|Siųsti prašymą|Siunčiama…|Ačiū! Jūsų prašymas išsiųstas.|Nepavyko išsiųsti. Patikrinkite ryšį ir bandykite dar kartą.|Teisingai užpildykite visus laukus.|Paskolos trukmė|m.|Palūkanų norma: 2 % per metus|Mėnesinė įmoka|Iš viso grąžinti|Iš jų palūkanos",
-  lb:"Sprooch|Kreditsufro|Betrag deen Dir braucht|Monatsgehalt|Familljennumm|Virnumm|Land|Stad|Beruff|Telefonsnummer|E-Mail-Adress|Wielt e Land|Meng Ufro schécken|Gëtt geschéckt…|Merci! Är Ufro gouf geschéckt.|Schécke feelgeschloen. Kontrolléiert Är Verbindung a probéiert nach eng Kéier.|Fëllt w.e.g. all Felder richteg aus.|Dauer vum Prêt|Joer|Zënssaz: 2 % pro Joer|Monatlech Ratt|Total zréckzebezuelen|Dovun Zënsen",
-  lv:"Valoda|Kredīta pieprasījums|Nepieciešamā summa|Mēneša alga|Uzvārds|Vārds|Valsts|Pilsēta|Profesija|Tālruņa numurs|E-pasta adrese|Izvēlieties valsti|Nosūtīt pieprasījumu|Sūta…|Paldies! Jūsu pieprasījums ir nosūtīts.|Nosūtīšana neizdevās. Pārbaudiet savienojumu un mēģiniet vēlreiz.|Lūdzu, pareizi aizpildiet visus laukus.|Aizdevuma termiņš|gadi|Procentu likme: 2 % gadā|Mēneša maksājums|Kopā atmaksājamā summa|No tās procenti",
-  it:"Lingua|Richiesta di prestito|Importo di cui hai bisogno|Stipendio mensile|Cognome|Nome|Paese|Città|Professione|Numero di telefono|Indirizzo email|Scegli un paese|Invia la mia richiesta|Invio in corso…|Grazie! La tua richiesta è stata inviata.|Invio non riuscito. Controlla la connessione e riprova.|Compila correttamente tutti i campi.|Durata del prestito|anni|Tasso di interesse: 2% annuo|Rata mensile|Totale da rimborsare|Di cui interessi",
-  de:"Sprache|Kreditantrag|Benötigter Betrag|Monatsgehalt|Nachname|Vorname|Land|Stadt|Beruf|Telefonnummer|E-Mail-Adresse|Land auswählen|Meine Anfrage senden|Wird gesendet…|Danke! Ihre Anfrage wurde gesendet.|Senden fehlgeschlagen. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.|Bitte füllen Sie alle Felder korrekt aus.|Laufzeit|Jahre|Zinssatz: 2 % pro Jahr|Monatliche Rate|Gesamtbetrag|Davon Zinsen",
-  pt:"Idioma|Pedido de crédito|Montante de que precisa|Salário mensal|Apelido|Nome|País|Cidade|Profissão|Número de telefone|Endereço de email|Escolha um país|Enviar o meu pedido|A enviar…|Obrigado! O seu pedido foi enviado.|Falha no envio. Verifique a ligação e tente novamente.|Preencha todos os campos corretamente.|Duração do empréstimo|anos|Taxa de juro: 2 % ao ano|Prestação mensal|Total a reembolsar|Dos quais juros",
-  ru:"Язык|Заявка на кредит|Необходимая сумма|Ежемесячная зарплата|Фамилия|Имя|Страна|Город|Профессия|Номер телефона|Адрес электронной почты|Выберите страну|Отправить заявку|Отправка…|Спасибо! Ваша заявка отправлена.|Не удалось отправить. Проверьте соединение и повторите попытку.|Пожалуйста, правильно заполните все поля.|Срок кредита|г.|Процентная ставка: 2 % годовых|Ежемесячный платёж|Всего к возврату|В том числе проценты",
-  uk:"Мова|Заявка на кредит|Потрібна сума|Щомісячна зарплата|Прізвище|Ім’я|Країна|Місто|Професія|Номер телефону|Адреса електронної пошти|Оберіть країну|Надіслати заявку|Надсилання…|Дякуємо! Вашу заявку надіслано.|Не вдалося надіслати. Перевірте з’єднання та спробуйте ще раз.|Будь ласка, правильно заповніть усі поля.|Строк кредиту|р.|Відсоткова ставка: 2 % річних|Щомісячний платіж|Всього до повернення|З них відсотки",
-  ro:"Limba|Cerere de credit|Suma de care aveți nevoie|Salariu lunar|Nume de familie|Prenume|Țara|Orașul|Profesia|Număr de telefon|Adresă de email|Alegeți o țară|Trimite cererea|Se trimite…|Mulțumim! Cererea dvs. a fost trimisă.|Trimiterea a eșuat. Verificați conexiunea și încercați din nou.|Completați corect toate câmpurile.|Durata împrumutului|ani|Rata dobânzii: 2 % pe an|Rată lunară|Total de rambursat|Din care dobânda",
-  hr:"Jezik|Zahtjev za kredit|Iznos koji trebate|Mjesečna plaća|Prezime|Ime|Država|Grad|Zanimanje|Broj telefona|Adresa e-pošte|Odaberite državu|Pošalji zahtjev|Slanje…|Hvala! Vaš zahtjev je poslan.|Slanje nije uspjelo. Provjerite vezu i pokušajte ponovno.|Molimo ispravno ispunite sve polja.|Rok otplate|god.|Kamatna stopa: 2 % godišnje|Mjesečna rata|Ukupno za otplatu|Od toga kamate"
+const EMAIL_DESTINATION="lapatience195@gmail.com";
+
+const translations={
+fr:{
+home:"Accueil",loans:"Nos prêts",sim:"Simulation",request:"Demande",company:"Société",
+hero:"Des solutions de financement pour accompagner vos projets",
+heroText:"Consultez les informations sur les différents types de financement, réalisez une simulation indicative et préparez votre demande.",
+start:"Préparer une demande",loanTitle:"Nos solutions de financement",
+loanIntro:"Découvrez les principales catégories de financement. L'éligibilité, les taux, les frais et les durées doivent être confirmés dans une offre écrite avant tout engagement.",
+personal:"Prêt personnel",personalTag:"Financement personnel",personalText:"Peut servir à financer des dépenses personnelles, un projet familial, des travaux ou un besoin ponctuel. Le montant et la durée dépendent de l'étude du dossier.",
+auto:"Prêt automobile",autoTag:"Véhicule",autoText:"Financement destiné à l'achat d'un véhicule neuf ou d'occasion. Le dossier peut nécessiter des informations sur le véhicule et le prix d'achat.",
+homeLoan:"Prêt immobilier",homeTag:"Immobilier",homeText:"Financement pouvant concerner l'achat, la construction ou certains travaux immobiliers. Une évaluation approfondie du projet et des garanties peut être nécessaire.",
+business:"Prêt professionnel",businessTag:"Entreprise",businessText:"Financement destiné aux besoins d'une activité professionnelle : équipement, trésorerie, développement ou investissement. Des justificatifs professionnels peuvent être demandés.",
+student:"Prêt étudiant",studentTag:"Études",studentText:"Financement pouvant contribuer aux frais de formation, de scolarité, de matériel ou de vie étudiante, sous réserve des conditions applicables.",
+apply:"Préparer une demande →",important:"Information importante :",importantText:"La présentation de ces catégories ne signifie pas que chaque produit est actuellement proposé ou qu'une demande sera acceptée. Les conditions officielles doivent être vérifiées avant publication.",
+simTitle:"Simulateur de financement",simIntro:"Estimez une simple répartition du montant demandé sur la durée choisie.",amount:"Montant souhaité (€)",duration:"Durée (mois)",monthly:"Répartition mensuelle indicative :",simNote:"Calcul simplifié : montant divisé par le nombre de mois. Cette simulation n'est pas une offre de crédit. Elle ne tient compte d'aucun taux, intérêt, frais, assurance ou autre coût.",
+formTitle:"Formulaire de demande de financement",formIntro:"Indiquez les informations nécessaires pour présenter votre projet. Une demande ne constitue pas une approbation de crédit.",name:"Nom et prénom",email:"Adresse e-mail",country:"Pays de résidence",phone:"Téléphone (facultatif)",type:"Type de financement",requested:"Montant souhaité (€)",desiredTerm:"Durée souhaitée (mois)",purpose:"Objet de la demande / Description du projet",consent:"J'accepte que les informations ci-dessus soient utilisées pour répondre à ma demande. J'ai pris connaissance de la politique de confidentialité.",privacy:"Ne transmettez jamais de numéro de carte bancaire, de mot de passe, de code PIN ou de code de validation. Évitez d'inclure des documents sensibles dans un e-mail ordinaire.",send:"Préparer l'envoi de la demande",companyTitle:"Informations sur la société",legal:"Dénomination sociale communiquée",code:"Code de société communiqué",address:"Adresse communiquée",established:"Date de création communiquée",turnover:"Chiffre d'affaires 2025 communiqué",director:"Directrice communiquée",verify:"Ces informations ont été fournies pour la création de cette page. Elles doivent être vérifiées dans les registres officiels. Leur affichage ne prouve ni l'identité de l'exploitant du site ni son autorisation à proposer des crédits.",contactTitle:"Contact",emailContact:"Adresse e-mail de contact :",contactNote:"Pour toute demande, utilisez l'adresse de contact indiquée. N'envoyez pas de données bancaires confidentielles par e-mail.",footer:"Les informations présentées sont générales. Une simulation n'est pas une offre de crédit, une approbation ou une garantie de financement. Les conditions contractuelles et les autorisations réglementaires doivent être vérifiées.",rights:"Tous droits réservés.",mailNotice:"Votre logiciel de messagerie va s'ouvrir pour préparer votre demande. Vérifiez son contenu avant de l'envoyer.",monthlyUnit:"par mois"
+},
+en:{
+home:"Home",loans:"Loan types",sim:"Calculator",request:"Application",company:"Company",
+hero:"Financing information for your projects",heroText:"Explore financing categories, use the indicative calculator and prepare your request.",start:"Prepare a request",loanTitle:"Our financing categories",loanIntro:"Explore the main financing categories. Eligibility, rates, fees and terms must be confirmed in a written offer before any commitment.",
+personal:"Personal loan",personalTag:"Personal finance",personalText:"May be used for personal expenses, family projects, home improvements or short-term needs. Amount and term depend on assessment.",
+auto:"Car loan",autoTag:"Vehicle",autoText:"Financing for a new or used vehicle. Details about the vehicle and purchase price may be required.",
+homeLoan:"Mortgage",homeTag:"Property",homeText:"Financing that may cover a property purchase, construction or certain renovations. Project and security assessments may be required.",
+business:"Business loan",businessTag:"Business",businessText:"Financing for business needs such as equipment, working capital, development or investment. Business documents may be requested.",
+student:"Student loan",studentTag:"Education",studentText:"Financing that may contribute to tuition, training, equipment or student living costs, subject to applicable conditions.",
+apply:"Prepare a request →",important:"Important information:",importantText:"Displaying these categories does not mean that every product is currently offered or that an application will be approved. Official terms must be verified before publication.",
+simTitle:"Financing calculator",simIntro:"Estimate a simple division of the requested amount over your chosen term.",amount:"Requested amount (€)",duration:"Term (months)",monthly:"Indicative monthly division:",simNote:"Simplified calculation: amount divided by number of months. This is not a credit offer and excludes interest, fees, insurance and other costs.",
+formTitle:"Financing application form",formIntro:"Provide the information needed to describe your project. An application is not a credit approval.",name:"Full name",email:"Email address",country:"Country of residence",phone:"Phone (optional)",type:"Financing type",requested:"Requested amount (€)",desiredTerm:"Desired term (months)",purpose:"Purpose / Project description",consent:"I agree that the information above may be used to respond to my request. I have read the privacy policy.",privacy:"Never provide bank card numbers, passwords, PINs or verification codes. Avoid sending sensitive documents by ordinary email.",send:"Prepare application email",companyTitle:"Company information",legal:"Provided legal name",code:"Provided company code",address:"Provided address",established:"Provided establishment date",turnover:"Provided 2025 turnover",director:"Provided director",verify:"These details were supplied for this page and must be verified in official registers. Their display does not establish the website operator's identity or authority to offer credit.",contactTitle:"Contact",emailContact:"Contact email:",contactNote:"Use the contact address shown for enquiries. Do not send confidential banking information by email.",footer:"Information is general. A calculation is not a credit offer, approval or financing guarantee. Contractual terms and regulatory authorisations must be verified.",rights:"All rights reserved.",mailNotice:"Your email application will open in your email program. Review its contents before sending.",monthlyUnit:"per month"
+},
+lt:{
+home:"Pradžia",loans:"Paskolų rūšys",sim:"Skaičiuoklė",request:"Paraiška",company:"Įmonė",
+hero:"Finansavimo informacija jūsų projektams",heroText:"Susipažinkite su finansavimo rūšimis, atlikite preliminarų skaičiavimą ir paruoškite užklausą.",start:"Paruošti užklausą",loanTitle:"Finansavimo rūšys",loanIntro:"Susipažinkite su pagrindinėmis finansavimo rūšimis. Sąlygos, palūkanos, mokesčiai ir terminai turi būti patvirtinti rašytiniame pasiūlyme.",
+personal:"Asmeninė paskola",personalTag:"Asmeninis finansavimas",personalText:"Gali būti skirta asmeninėms išlaidoms, šeimos projektams ar būsto remontui. Suma ir terminas priklauso nuo paraiškos vertinimo.",
+auto:"Automobilio paskola",autoTag:"Transporto priemonė",autoText:"Finansavimas naujam arba naudotam automobiliui įsigyti. Gali reikėti informacijos apie automobilį ir jo kainą.",
+homeLoan:"Būsto paskola",homeTag:"Nekilnojamasis turtas",homeText:"Finansavimas būstui įsigyti, statyti ar remontuoti. Gali būti vertinamas projektas ir užtikrinimo priemonės.",
+business:"Verslo paskola",businessTag:"Verslas",businessText:"Finansavimas verslo įrangai, apyvartinėms lėšoms, plėtrai ar investicijoms.",
+student:"Studijų paskola",studentTag:"Studijos",studentText:"Finansavimas studijų, mokymo, priemonių ar pragyvenimo išlaidoms pagal taikomas sąlygas.",
+apply:"Paruošti užklausą →",important:"Svarbi informacija:",importantText:"Šių kategorijų pateikimas nereiškia, kad visi produktai šiuo metu siūlomi arba kad paraiška bus patvirtinta. Sąlygos turi būti patikrintos.",
+simTitle:"Finansavimo skaičiuoklė",simIntro:"Apskaičiuokite paprastą sumos paskirstymą pasirinktam laikotarpiui.",amount:"Pageidaujama suma (€)",duration:"Terminas (mėnesiais)",monthly:"Preliminari mėnesio suma:",simNote:"Supaprastintas skaičiavimas: suma padalijama iš mėnesių skaičiaus. Tai nėra kredito pasiūlymas; palūkanos ir mokesčiai neįtraukti.",
+formTitle:"Finansavimo paraiška",formIntro:"Pateikite informaciją apie savo projektą. Paraiška nėra kredito patvirtinimas.",name:"Vardas ir pavardė",email:"El. pašto adresas",country:"Gyvenamoji šalis",phone:"Telefonas (neprivaloma)",type:"Finansavimo rūšis",requested:"Pageidaujama suma (€)",desiredTerm:"Pageidaujamas terminas (mėnesiais)",purpose:"Užklausos tikslas / Projekto aprašymas",consent:"Sutinku, kad pateikta informacija būtų naudojama atsakymui į mano užklausą.",privacy:"Niekada nepateikite banko kortelių numerių, slaptažodžių ar PIN kodų.",send:"Paruošti paraiškos el. laišką",companyTitle:"Informacija apie įmonę",legal:"Nurodytas juridinis pavadinimas",code:"Nurodytas įmonės kodas",address:"Nurodytas adresas",established:"Nurodyta įsteigimo data",turnover:"Nurodyta 2025 m. apyvarta",director:"Nurodyta direktorė",verify:"Ši informacija pateikta šiam puslapiui ir turi būti patikrinta oficialiuose registruose.",contactTitle:"Kontaktai",emailContact:"Kontaktinis el. paštas:",contactNote:"Nesiųskite konfidencialios bankinės informacijos el. paštu.",footer:"Informacija yra bendro pobūdžio. Skaičiavimas nėra kredito pasiūlymas ar finansavimo garantija.",rights:"Visos teisės saugomos.",mailNotice:"Atsidarys jūsų el. pašto programa. Prieš siųsdami patikrinkite laišką.",monthlyUnit:"per mėnesį"
+}
 };
-for(const l in T) T[l] = Object.fromEntries(T[l].split("|").map((v,i)=>[KEYS[i],v]));
 
-const COUNTRIES = ("BJ:229,TG:228,CI:225,SN:221,ML:223,BF:226,NE:227,GN:224,GW:245,GM:220,LR:231,SL:232,GH:233,NG:234,"
-+"CM:237,TD:235,CF:236,CG:242,CD:243,GA:241,GQ:240,ST:239,AO:244,MG:261,MU:230,SC:248,KM:269,DJ:253,RW:250,BI:257,"
-+"UG:256,KE:254,TZ:255,ET:251,SO:252,SD:249,SS:211,EG:20,LY:218,TN:216,DZ:213,MA:212,MR:222,CV:238,ZA:27,NA:264,"
-+"BW:267,ZW:263,ZM:260,MW:265,MZ:258,LS:266,SZ:268,FR:33,BE:32,CH:41,LU:352,DE:49,IT:39,ES:34,PT:351,GB:44,IE:353,"
-+"NL:31,AT:43,SE:46,NO:47,DK:45,FI:358,PL:48,CZ:420,RO:40,GR:30,TR:90,RU:7,UA:380,US:1,CA:1,MX:52,BR:55,AR:54,"
-+"CL:56,CO:57,PE:51,VE:58,HT:509,DO:1,CU:53,JM:1,GP:590,MQ:596,GF:594,RE:262,AE:971,SA:966,QA:974,KW:965,LB:961,"
-+"JO:962,IL:972,IQ:964,IR:98,IN:91,PK:92,BD:880,CN:86,JP:81,KR:82,VN:84,TH:66,MY:60,SG:65,ID:62,PH:63,AU:61,NZ:64,"
-+"AL:355,AD:376,AM:374,AZ:994,BY:375,BA:387,BG:359,HR:385,CY:357,EE:372,GE:995,HU:36,IS:354,XK:383,LV:371,LI:423,"
-+"LT:370,MT:356,MD:373,MC:377,ME:382,MK:389,RS:381,SK:421,SI:386,SM:378,VA:379")
-  .split(",").map(s=>{const [c,d]=s.split(":");return {iso:c,dial:d};});
+/* Kitos kalbos turi pilną pagrindinės sąsajos vertimą.
+   Jei norite teisinio ar finansinio publikavimo, rekomenduojama
+   vertimus patikrinti su profesionaliu vertėju. */
+const extra={
+lb:{home:"Accueil",loans:"Prêten",sim:"Berechnung",request:"Ufro",company:"Firma",hero:"Finanzéierungsinformatioun fir Är Projeten",heroText:"Entdeckt Finanzéierungskategorien a preparéiert Är Ufro.",start:"Ufro preparéieren",loanTitle:"Finanzéierungskategorien",loanIntro:"Konditiounen a Käschte mussen an engem schrëftlechen Offer confirméiert ginn.",personal:"Perséinleche Prêt",auto:"Autoprêt",homeLoan:"Immobilieprêt",business:"Geschäftsprêt",student:"Studentekredit",apply:"Ufro preparéieren →",important:"Wichteg Informatioun:",importantText:"Dës Kategorien bedeiten net, datt all Produkt verfügbar ass oder eng Ufro akzeptéiert gëtt.",simTitle:"Finanzéierungsrechner",simIntro:"Berechent eng einfach Verdeelung vum Betrag.",amount:"Gewënschte Betrag (€)",duration:"Dauer (Méint)",monthly:"Indikative monatleche Betrag:",simNote:"Dëst ass keng Kredittoffer a berücksichtegt keng Zënsen oder Fraisen.",formTitle:"Ufroformular",formIntro:"Gitt Informatiounen iwwer Äre Projet un. Eng Ufro ass keng Kreditzouso.",name:"Virnumm a Familljennumm",email:"E-Mail",country:"Wunnsëtzland",phone:"Telefon (optional)",type:"Finanzéierungstyp",requested:"Gewënschte Betrag (€)",desiredTerm:"Gewënschten Dauer (Méint)",purpose:"Zweck vun der Ufro",consent:"Ech averstanen, datt meng Informatioune benotzt ginn, fir op meng Ufro ze äntweren.",privacy:"Gitt keng Bankkaartennummeren oder Passwierder un.",send:"Ufro-E-Mail preparéieren",companyTitle:"Firma-Informatiounen",legal:"Juristeschen Numm",code:"Firmecode",address:"Adress",established:"Grënnungsdatum",turnover:"Ëmsaz 2025",director:"Direktioun",verify:"Dës Informatioune musse virun der Verëffentlechung iwwerpréift ginn.",contactTitle:"Kontakt",emailContact:"Kontakt-E-Mail:",contactNote:"Schéckt keng vertraulech Bankinformatiounen per E-Mail.",footer:"Dës Informatioune si generell. Eng Berechnung ass keng Kredittoffer oder Finanzéierungsgarantie.",rights:"All Rechter virbehalen.",mailNotice:"Är E-Mail-Applikatioun gëtt opgemaach. Kontrolléiert se virum Schécken.",monthlyUnit:"pro Mount"},
+lv:{home:"Sākums",loans:"Aizdevumi",sim:"Aprēķins",request:"Pieteikums",company:"Uzņēmums",hero:"Finansējuma informācija jūsu projektiem",heroText:"Iepazīstieties ar finansējuma veidiem un sagatavojiet pieprasījumu.",start:"Sagatavot pieprasījumu",loanTitle:"Finansējuma veidi",loanIntro:"Nosacījumi un izmaksas jāapstiprina rakstiskā piedāvājumā.",personal:"Personīgais aizdevums",auto:"Auto aizdevums",homeLoan:"Mājokļa aizdevums",business:"Uzņēmuma aizdevums",student:"Studiju aizdevums",apply:"Sagatavot pieprasījumu →",important:"Svarīga informācija:",importantText:"Šīs kategorijas negarantē produkta pieejamību vai pieteikuma apstiprināšanu.",simTitle:"Finansējuma kalkulators",simIntro:"Aprēķiniet vienkāršu summas sadalījumu.",amount:"Vēlamā summa (€)",duration:"Termiņš (mēneši)",monthly:"Orientējošā mēneša summa:",simNote:"Tas nav kredīta piedāvājums un neietver procentus vai komisijas.",formTitle:"Finansējuma pieteikums",formIntro:"Sniedziet informāciju par projektu. Pieteikums nav kredīta apstiprinājums.",name:"Vārds un uzvārds",email:"E-pasts",country:"Dzīvesvietas valsts",phone:"Tālrunis (neobligāti)",type:"Finansējuma veids",requested:"Vēlamā summa (€)",desiredTerm:"Vēlamais termiņš (mēneši)",purpose:"Pieprasījuma mērķis",consent:"Piekrītu, ka informācija tiek izmantota, lai atbildētu uz manu pieprasījumu.",privacy:"Nekad nesniedziet bankas kartes numurus vai paroles.",send:"Sagatavot pieteikuma e-pastu",companyTitle:"Uzņēmuma informācija",legal:"Juridiskais nosaukums",code:"Uzņēmuma kods",address:"Adrese",established:"Dibināšanas datums",turnover:"Apgrozījums 2025",director:"Direktore",verify:"Informācija pirms publicēšanas jāpārbauda oficiālajos reģistros.",contactTitle:"Kontakti",emailContact:"Kontaktpersonas e-pasts:",contactNote:"Nesūtiet konfidenciālu bankas informāciju pa e-pastu.",footer:"Informācija ir vispārīga. Aprēķins nav kredīta piedāvājums vai garantija.",rights:"Visas tiesības aizsargātas.",mailNotice:"Atvērsies jūsu e-pasta programma. Pirms nosūtīšanas pārbaudiet ziņojumu.",monthlyUnit:"mēnesī"},
+it:{home:"Home",loans:"Prestiti",sim:"Simulazione",request:"Richiesta",company:"Società",hero:"Informazioni sul finanziamento per i tuoi progetti",heroText:"Scopri le categorie di finanziamento e prepara la tua richiesta.",start:"Prepara una richiesta",loanTitle:"Categorie di finanziamento",loanIntro:"Condizioni e costi devono essere confermati in un'offerta scritta.",personal:"Prestito personale",auto:"Prestito auto",homeLoan:"Mutuo immobiliare",business:"Prestito aziendale",student:"Prestito per studenti",apply:"Prepara una richiesta →",important:"Informazione importante:",importantText:"Le categorie non garantiscono la disponibilità del prodotto né l'approvazione della richiesta.",simTitle:"Calcolatore",simIntro:"Calcola una semplice ripartizione dell'importo.",amount:"Importo desiderato (€)",duration:"Durata (mesi)",monthly:"Importo mensile indicativo:",simNote:"Non è un'offerta di credito e non include interessi o commissioni.",formTitle:"Modulo di richiesta",formIntro:"Descrivi il tuo progetto. La richiesta non equivale a un'approvazione.",name:"Nome e cognome",email:"E-mail",country:"Paese di residenza",phone:"Telefono (facoltativo)",type:"Tipo di finanziamento",requested:"Importo richiesto (€)",desiredTerm:"Durata desiderata (mesi)",purpose:"Scopo della richiesta",consent:"Acconsento all'utilizzo delle informazioni per rispondere alla mia richiesta.",privacy:"Non inserire numeri di carte bancarie o password.",send:"Prepara l'e-mail",companyTitle:"Informazioni sulla società",legal:"Denominazione legale",code:"Codice aziendale",address:"Indirizzo",established:"Data di costituzione",turnover:"Fatturato 2025",director:"Direttrice",verify:"Verificare queste informazioni nei registri ufficiali prima della pubblicazione.",contactTitle:"Contatti",emailContact:"E-mail di contatto:",contactNote:"Non inviare informazioni bancarie riservate via e-mail.",footer:"Informazioni generali. Il calcolo non è un'offerta né una garanzia di finanziamento.",rights:"Tutti i diritti riservati.",mailNotice:"Si aprirà il tuo programma di posta. Controlla il messaggio prima di inviarlo.",monthlyUnit:"al mese"},
+de:{home:"Startseite",loans:"Kreditarten",sim:"Berechnung",request:"Antrag",company:"Unternehmen",hero:"Finanzierungsinformationen für Ihre Projekte",heroText:"Entdecken Sie Finanzierungskategorien und bereiten Sie Ihre Anfrage vor.",start:"Anfrage vorbereiten",loanTitle:"Finanzierungskategorien",loanIntro:"Bedingungen und Kosten müssen in einem schriftlichen Angebot bestätigt werden.",personal:"Privatkredit",auto:"Autokredit",homeLoan:"Immobilienkredit",business:"Geschäftskredit",student:"Studienkredit",apply:"Anfrage vorbereiten →",important:"Wichtige Information:",importantText:"Diese Kategorien garantieren weder die Verfügbarkeit noch die Genehmigung eines Antrags.",simTitle:"Finanzierungsrechner",simIntro:"Berechnen Sie eine einfache Aufteilung des Betrags.",amount:"Gewünschter Betrag (€)",duration:"Laufzeit (Monate)",monthly:"Unverbindlicher monatlicher Betrag:",simNote:"Dies ist kein Kreditangebot und enthält keine Zinsen oder Gebühren.",formTitle:"Finanzierungsantrag",formIntro:"Beschreiben Sie Ihr Projekt. Ein Antrag ist keine Kreditzusage.",name:"Vor- und Nachname",email:"E-Mail-Adresse",country:"Wohnsitzland",phone:"Telefon (optional)",type:"Finanzierungsart",requested:"Gewünschter Betrag (€)",desiredTerm:"Gewünschte Laufzeit (Monate)",purpose:"Zweck der Anfrage",consent:"Ich stimme der Verwendung meiner Angaben zur Beantwortung meiner Anfrage zu.",privacy:"Geben Sie niemals Kartennummern oder Passwörter an.",send:"E-Mail vorbereiten",companyTitle:"Unternehmensinformationen",legal:"Rechtlicher Name",code:"Unternehmenscode",address:"Adresse",established:"Gründungsdatum",turnover:"Umsatz 2025",director:"Geschäftsführerin",verify:"Diese Angaben müssen vor Veröffentlichung in offiziellen Registern überprüft werden.",contactTitle:"Kontakt",emailContact:"Kontakt-E-Mail:",contactNote:"Senden Sie keine vertraulichen Bankdaten per E-Mail.",footer:"Allgemeine Informationen. Die Berechnung ist kein Kreditangebot und keine Garantie.",rights:"Alle Rechte vorbehalten.",mailNotice:"Ihr E-Mail-Programm wird geöffnet. Prüfen Sie die Nachricht vor dem Versand.",monthlyUnit:"pro Monat"},
+pt:{home:"Início",loans:"Empréstimos",sim:"Simulação",request:"Pedido",company:"Empresa",hero:"Informações de financiamento para os seus projetos",heroText:"Conheça as categorias de financiamento e prepare o seu pedido.",start:"Preparar pedido",loanTitle:"Categorias de financiamento",loanIntro:"As condições e os custos devem ser confirmados numa proposta escrita.",personal:"Crédito pessoal",auto:"Crédito automóvel",homeLoan:"Crédito habitação",business:"Crédito empresarial",student:"Crédito estudantil",apply:"Preparar pedido →",important:"Informação importante:",importantText:"Estas categorias não garantem a disponibilidade do produto nem a aprovação do pedido.",simTitle:"Simulador",simIntro:"Calcule uma divisão simples do montante.",amount:"Montante pretendido (€)",duration:"Prazo (meses)",monthly:"Valor mensal indicativo:",simNote:"Não é uma oferta de crédito e não inclui juros ou comissões.",formTitle:"Formulário de pedido",formIntro:"Descreva o seu projeto. O pedido não representa aprovação de crédito.",name:"Nome completo",email:"E-mail",country:"País de residência",phone:"Telefone (opcional)",type:"Tipo de financiamento",requested:"Montante solicitado (€)",desiredTerm:"Prazo desejado (meses)",purpose:"Objetivo do pedido",consent:"Autorizo a utilização das informações para responder ao meu pedido.",privacy:"Nunca forneça números de cartões ou palavras-passe.",send:"Preparar e-mail",companyTitle:"Informações da empresa",legal:"Nome legal",code:"Código da empresa",address:"Morada",established:"Data de constituição",turnover:"Volume de negócios 2025",director:"Diretora",verify:"Verifique estas informações nos registos oficiais antes da publicação.",contactTitle:"Contacto",emailContact:"E-mail de contacto:",contactNote:"Não envie informações bancárias confidenciais por e-mail.",footer:"Informações gerais. O cálculo não é uma oferta nem uma garantia de financiamento.",rights:"Todos os direitos reservados.",mailNotice:"O seu programa de e-mail será aberto. Verifique a mensagem antes de enviar.",monthlyUnit:"por mês"},
+ru:{home:"Главная",loans:"Виды кредитов",sim:"Расчёт",request:"Заявка",company:"Компания",hero:"Информация о финансировании ваших проектов",heroText:"Изучите категории финансирования и подготовьте заявку.",start:"Подготовить заявку",loanTitle:"Категории финансирования",loanIntro:"Условия и расходы должны быть подтверждены письменным предложением.",personal:"Личный кредит",auto:"Автокредит",homeLoan:"Ипотека",business:"Бизнес-кредит",student:"Студенческий кредит",apply:"Подготовить заявку →",important:"Важная информация:",importantText:"Наличие продукта и одобрение заявки не гарантируются.",simTitle:"Калькулятор",simIntro:"Рассчитайте простое распределение суммы.",amount:"Желаемая сумма (€)",duration:"Срок (месяцев)",monthly:"Предварительная сумма в месяц:",simNote:"Это не кредитное предложение; проценты и комиссии не включены.",formTitle:"Форма заявки",formIntro:"Опишите свой проект. Заявка не означает одобрение кредита.",name:"Имя и фамилия",email:"Электронная почта",country:"Страна проживания",phone:"Телефон (необязательно)",type:"Тип финансирования",requested:"Запрашиваемая сумма (€)",desiredTerm:"Желаемый срок (месяцев)",purpose:"Цель заявки",consent:"Я согласен на использование информации для ответа на мою заявку.",privacy:"Не указывайте номера карт и пароли.",send:"Подготовить письмо",companyTitle:"Информация о компании",legal:"Юридическое название",code:"Код компании",address:"Адрес",established:"Дата основания",turnover:"Оборот за 2025 год",director:"Директор",verify:"Проверьте эти сведения в официальных реестрах перед публикацией.",contactTitle:"Контакты",emailContact:"Контактная почта:",contactNote:"Не отправляйте конфиденциальные банковские данные по электронной почте.",footer:"Общая информация. Расчёт не является предложением или гарантией финансирования.",rights:"Все права защищены.",mailNotice:"Откроется почтовая программа. Проверьте письмо перед отправкой.",monthlyUnit:"в месяц"},
+uk:{home:"Головна",loans:"Види кредитів",sim:"Розрахунок",request:"Заявка",company:"Компанія",hero:"Інформація про фінансування ваших проєктів",heroText:"Ознайомтеся з категоріями фінансування та підготуйте заявку.",start:"Підготувати заявку",loanTitle:"Категорії фінансування",loanIntro:"Умови та витрати мають бути підтверджені письмовою пропозицією.",personal:"Особистий кредит",auto:"Автокредит",homeLoan:"Іпотека",business:"Бізнес-кредит",student:"Студентський кредит",apply:"Підготувати заявку →",important:"Важлива інформація:",importantText:"Наявність продукту та схвалення заявки не гарантуються.",simTitle:"Калькулятор",simIntro:"Розрахуйте простий розподіл суми.",amount:"Бажана сума (€)",duration:"Строк (місяців)",monthly:"Попередня сума на місяць:",simNote:"Це не кредитна пропозиція; відсотки та комісії не враховані.",formTitle:"Форма заявки",formIntro:"Опишіть свій проєкт. Заявка не означає схвалення кредиту.",name:"Ім'я та прізвище",email:"Електронна адреса",country:"Країна проживання",phone:"Телефон (необов'язково)",type:"Тип фінансування",requested:"Запитувана сума (€)",desiredTerm:"Бажаний строк (місяців)",purpose:"Мета заявки",consent:"Погоджуюся на використання інформації для відповіді на мою заявку.",privacy:"Не вказуйте номери карток і паролі.",send:"Підготувати лист",companyTitle:"Інформація про компанію",legal:"Юридична назва",code:"Код компанії",address:"Адреса",established:"Дата заснування",turnover:"Оборот за 2025 рік",director:"Директорка",verify:"Перевірте ці відомості в офіційних реєстрах перед публікацією.",contactTitle:"Контакти",emailContact:"Контактна пошта:",contactNote:"Не надсилайте конфіденційні банківські дані електронною поштою.",footer:"Загальна інформація. Розрахунок не є пропозицією чи гарантією фінансування.",rights:"Усі права захищено.",mailNotice:"Відкриється ваша поштова програма. Перевірте лист перед відправленням.",monthlyUnit:"на місяць"},
+ro:{home:"Acasă",loans:"Tipuri de credite",sim:"Simulare",request:"Cerere",company:"Companie",hero:"Informații de finanțare pentru proiectele dumneavoastră",heroText:"Descoperiți categoriile de finanțare și pregătiți cererea.",start:"Pregătiți o cerere",loanTitle:"Categorii de finanțare",loanIntro:"Condițiile și costurile trebuie confirmate printr-o ofertă scrisă.",personal:"Credit personal",auto:"Credit auto",homeLoan:"Credit ipotecar",business:"Credit pentru afaceri",student:"Credit pentru studenți",apply:"Pregătiți o cerere →",important:"Informație importantă:",importantText:"Aceste categorii nu garantează disponibilitatea produsului sau aprobarea cererii.",simTitle:"Calculator",simIntro:"Calculați o împărțire simplă a sumei.",amount:"Suma dorită (€)",duration:"Perioada (luni)",monthly:"Valoare lunară orientativă:",simNote:"Nu este o ofertă de credit și nu include dobânzi sau comisioane.",formTitle:"Formular de solicitare",formIntro:"Descrieți proiectul. Cererea nu înseamnă aprobarea creditului.",name:"Nume și prenume",email:"E-mail",country:"Țara de reședință",phone:"Telefon (opțional)",type:"Tip de finanțare",requested:"Suma solicitată (€)",desiredTerm:"Perioada dorită (luni)",purpose:"Scopul solicitării",consent:"Sunt de acord cu utilizarea informațiilor pentru a răspunde cererii mele.",privacy:"Nu furnizați numere de card sau parole.",send:"Pregătiți e-mailul",companyTitle:"Informații despre companie",legal:"Denumire legală",code:"Cod companie",address:"Adresă",established:"Data înființării",turnover:"Cifra de afaceri 2025",director:"Directoare",verify:"Verificați aceste informații în registrele oficiale înainte de publicare.",contactTitle:"Contact",emailContact:"E-mail de contact:",contactNote:"Nu trimiteți informații bancare confidențiale prin e-mail.",footer:"Informații generale. Calculul nu este o ofertă sau o garanție de finanțare.",rights:"Toate drepturile rezervate.",mailNotice:"Se va deschide programul dumneavoastră de e-mail. Verificați mesajul înainte de trimitere.",monthlyUnit:"pe lună"},
+hr:{home:"Početna",loans:"Vrste kredita",sim:"Izračun",request:"Zahtjev",company:"Tvrtka",hero:"Informacije o financiranju vaših projekata",heroText:"Upoznajte kategorije financiranja i pripremite zahtjev.",start:"Pripremiti zahtjev",loanTitle:"Kategorije financiranja",loanIntro:"Uvjeti i troškovi moraju biti potvrđeni pisanom ponudom.",personal:"Osobni kredit",auto:"Auto kredit",homeLoan:"Stambeni kredit",business:"Poslovni kredit",student:"Studentski kredit",apply:"Pripremiti zahtjev →",important:"Važna informacija:",importantText:"Ove kategorije ne jamče dostupnost proizvoda ni odobrenje zahtjeva.",simTitle:"Kalkulator",simIntro:"Izračunajte jednostavnu raspodjelu iznosa.",amount:"Željeni iznos (€)",duration:"Razdoblje (mjeseci)",monthly:"Okvirni mjesečni iznos:",simNote:"Ovo nije kreditna ponuda i ne uključuje kamate ni naknade.",formTitle:"Obrazac zahtjeva",formIntro:"Opišite svoj projekt. Zahtjev ne znači odobrenje kredita.",name:"Ime i prezime",email:"E-pošta",country:"Zemlja prebivališta",phone:"Telefon (nije obavezno)",type:"Vrsta financiranja",requested:"Traženi iznos (€)",desiredTerm:"Željeno razdoblje (mjeseci)",purpose:"Svrha zahtjeva",consent:"Suglasan/suglasna sam s korištenjem podataka za odgovor na moj zahtjev.",privacy:"Nemojte navoditi brojeve kartica ili lozinke.",send:"Pripremiti e-poštu",companyTitle:"Podaci o tvrtki",legal:"Pravni naziv",code:"Kod tvrtke",address:"Adresa",established:"Datum osnivanja",turnover:"Promet 2025.",director:"Direktorica",verify:"Provjerite ove podatke u službenim registrima prije objave.",contactTitle:"Kontakt",emailContact:"Kontaktna e-pošta:",contactNote:"Ne šaljite povjerljive bankovne podatke e-poštom.",footer:"Opće informacije. Izračun nije ponuda ni jamstvo financiranja.",rights:"Sva prava pridržana.",mailNotice:"Otvorit će se vaš program za e-poštu. Provjerite poruku prije slanja.",monthlyUnit:"mjesečno"}
+};
 
-const flag = iso => String.fromCodePoint(...[...iso].map(ch=>127397+ch.charCodeAt(0)));
-const $ = id => document.getElementById(id);
-let lang = "fr";
+Object.assign(translations,extra);
 
-function countryName(iso){
-  try{ return new Intl.DisplayNames([lang],{type:"region"}).of(iso) || iso; }
-  catch(e){ return iso; }
+function setLanguage(lang){
+ const d=translations[lang]||translations.fr;
+ document.documentElement.lang=lang;
+ document.querySelectorAll("[data-t]").forEach(el=>{
+   const k=el.dataset.t;
+   if(d[k])el.textContent=d[k];
+ });
+ localStorage.setItem("kreditas-language",lang);
+ updateCalculator();
 }
-function buildLists(){
-  const p = $("pays").value || "FR", d = $("indicatif").value || "FR";
-  const sorted = COUNTRIES.map(c=>({...c,name:countryName(c.iso)}))
-    .sort((a,b)=>a.name.localeCompare(b.name,lang));
-  $("pays").innerHTML = `<option value="" disabled>${T[lang].choose}</option>` +
-    sorted.map(c=>`<option value="${c.iso}">${flag(c.iso)} ${c.name}</option>`).join("");
-  $("indicatif").innerHTML = sorted.map(c=>
-    `<option value="${c.iso}" data-dial="${c.dial}">${flag(c.iso)} +${c.dial} ${c.name}</option>`).join("");
-  $("pays").value = p; $("indicatif").value = d;
-}
-function applyLang(l){
-  lang = l; const t = T[l];
-  document.documentElement.lang = l;
-  document.title = t.title;
-  $("langLabel").textContent = t.langLabel;
-  $("title").textContent = t.title;
-  ["montant","salaire","nom","prenom","pays","ville","job","tel","email","duree","mensu","total","interets"].forEach(k=>$("l_"+k).textContent=t[k]);
-  $("taux").textContent=t.taux;
-  $("btn").textContent = t.btn;
-  buildLists(); updateLoan();
-  try{ localStorage.setItem("lang",l); }catch(e){}
-}
-$("pays").addEventListener("change",()=>{ $("indicatif").value = $("pays").value; });
-const RATE = 0.02;   /* 2 % par an, pour toutes les demandes */
-function loan(){
-  const v = Math.min(800000, Math.max(1000, +$("montant").value || 0));
-  const y = +$("duree").value, n = y*12, r = RATE/12;
-  const m = v*r/(1-Math.pow(1+r,-n)), total = m*n;
-  return {P:v, y, n, m, total, int: total-v};
-}
-function money(v,loc){
-  try{ return new Intl.NumberFormat(loc,{style:"currency",currency:$("devise").value}).format(v); }
-  catch(e){ return v.toFixed(2)+" "+$("devise").value; }
-}
-function updateLoan(){
-  const L = loan(), t = T[lang];
-  $("dureeOut").textContent = L.y+" "+t.mois;
-  $("o_mensu").textContent = money(L.m,lang);
-  $("o_total").textContent = money(L.total,lang);
-  $("o_int").textContent = money(L.int,lang);
-  $("cur2").textContent = $("devise").value;
-}
-$("montant").addEventListener("input",()=>{ $("montantRange").value = $("montant").value; updateLoan(); });
-$("montant").addEventListener("change",()=>{ const v=Math.min(800000,Math.max(1000,+$("montant").value||1000)); $("montant").value=v; $("montantRange").value=v; updateLoan(); });
-$("montantRange").addEventListener("input",()=>{ $("montant").value = $("montantRange").value; updateLoan(); });
-$("duree").addEventListener("input",updateLoan);
-$("devise").addEventListener("change",updateLoan);
-$("lang").addEventListener("change",e=>applyLang(e.target.value));
+const language=document.getElementById("language");
+language.value=localStorage.getItem("kreditas-language")||"fr";
+language.addEventListener("change",()=>setLanguage(language.value));
+setLanguage(language.value);
 
-(function init(){
-  let l = null;
-  try{ l = localStorage.getItem("lang"); }catch(e){}
-  if(!l || !T[l]){
-    const nav = (navigator.language||"fr").slice(0,2).toLowerCase();
-    l = T[nav] ? nav : "fr";
-  }
-  $("lang").value = l;
-  applyLang(l);
-  $("pays").value = "FR"; $("indicatif").value = "FR";
-})();
+function updateCalculator(){
+ const amount=Number(document.getElementById("amount").value);
+ const months=Number(document.getElementById("months").value);
+ const lang=document.documentElement.lang;
+ const out=document.getElementById("monthly");
+ if(amount>0&&months>0){
+  out.textContent=(amount/months).toLocaleString(lang,{style:"currency",currency:"EUR"});
+ }else{out.textContent="—";}
+}
+document.getElementById("amount").addEventListener("input",updateCalculator);
+document.getElementById("months").addEventListener("input",updateCalculator);
+document.getElementById("year").textContent=new Date().getFullYear();
 
-$("form").addEventListener("submit", async e=>{
-  e.preventDefault();
-  const msg=$("msg"), btn=$("btn"), t=T[lang];
-  msg.className="msg";
-  if(!$("form").checkValidity() || !$("pays").value){
-    msg.textContent=t.invalid; msg.className="msg err"; $("form").reportValidity(); return;
-  }
-  const dev=$("devise").value, dial=$("indicatif").selectedOptions[0].dataset.dial;
-  const payload={
-    "Montant demandé": money(loan().P,"fr-FR"),
-    "Durée": loan().y+" ans ("+loan().n+" mois)",
-    "Taux d’intérêt": "2 % par an",
-    "Mensualité": money(loan().m,"fr-FR"),
-    "Total à rembourser": money(loan().total,"fr-FR"),
-    "Dont intérêts": money(loan().int,"fr-FR"),
-    "Salaire mensuel": $("salaire").value+" "+dev,
-    "Nom de famille": $("nom").value.trim(),
-    "Prénom": $("prenom").value.trim(),
-    "Pays": countryName($("pays").value),
-    "Ville": $("ville").value.trim(),
-    "Travail": $("job").value.trim(),
-    "Téléphone": "+"+dial+" "+$("tel").value.trim(),
-    "Email": $("email").value.trim(),
-    "Langue du visiteur": lang,
-    "_subject": "Nouvelle demande de crédit : "+$("prenom").value.trim()+" "+$("nom").value.trim(),
-    "_template": "table",
-    "_captcha": "false",
-    "_honey": document.querySelector("[name=_honey]").value
-  };
-  btn.disabled=true; btn.textContent=t.sending;
-  try{
-    const r=await fetch("https://formsubmit.co/ajax/"+DESTINATION_EMAIL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json","Accept":"application/json"},
-      body:JSON.stringify(payload)
-    });
-    const data=await r.json();
-    if(r.ok && (data.success===true||data.success==="true")){
-      msg.textContent=t.ok; msg.className="msg ok";
-      $("form").reset(); $("pays").value="FR"; $("indicatif").value="FR"; updateLoan();
-    } else throw new Error(data.message||"error");
-  }catch(err){
-    msg.textContent=t.err; msg.className="msg err";
-  }finally{
-    btn.disabled=false; btn.textContent=t.btn;
-  }
+document.getElementById("loanForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ if(!this.reportValidity())return;
+ const d=translations[document.documentElement.lang]||translations.fr;
+ const fields={
+  name:document.getElementById("fullname")?.value
+ };
+ const name=document.getElementById("fullname").value.trim();
+ const email=document.getElementById("email").value.trim();
+ const country=document.getElementById("country").value.trim();
+ const phone=document.getElementById("phone").value.trim();
+ const type=document.getElementById("type").value;
+ const amount=document.getElementById("requestAmount").value;
+ const term=document.getElementById("term").value;
+ const purpose=document.getElementById("purpose").value.trim();
+
+ const subject=encodeURIComponent("KREDITAS - Demande d'information de financement");
+ const body=encodeURIComponent(
+  "Nouvelle demande d'information\n\n"+
+  "Nom : "+name+"\n"+
+  "E-mail : "+email+"\n"+
+  "Pays : "+country+"\n"+
+  "Téléphone : "+phone+"\n"+
+  "Type de financement : "+type+"\n"+
+  "Montant demandé : "+amount+" EUR\n"+
+  "Durée souhaitée : "+term+" mois\n"+
+  "Objet du projet : "+purpose+"\n\n"+
+  "Cette demande est une demande d'information et ne constitue pas une acceptation de crédit."
+ );
+ document.getElementById("formMessage").textContent=d.mailNotice;
+ window.location.href="mailto:"+EMAIL_DESTINATION+"?subject="+subject+"&body="+body;
 });
 </script>
 </body>
