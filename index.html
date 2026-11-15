@@ -59,6 +59,13 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;
     url("fond.jpg") center/cover no-repeat,
     url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 1200' preserveAspectRatio='xMidYMid slice'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%230F5C5A'/><stop offset='1' stop-color='%23091F24'/></linearGradient></defs><rect width='800' height='1200' fill='url(%23g)'/><g fill='%23ffffff' fill-opacity='.07'><rect x='60' y='820' width='90' height='300'/><rect x='190' y='720' width='90' height='400'/><rect x='320' y='610' width='90' height='510'/><rect x='450' y='490' width='90' height='630'/><rect x='580' y='360' width='90' height='760'/></g><g fill='none' stroke='%23F2C14E' stroke-opacity='.35' stroke-width='6'><circle cx='640' cy='170' r='70'/><circle cx='640' cy='170' r='48'/><circle cx='520' cy='250' r='56'/><circle cx='520' cy='250' r='36'/><circle cx='150' cy='330' r='80'/><circle cx='150' cy='330' r='56'/></g><path d='M40 1000 L200 880 L330 930 L470 720 L620 650 L760 480' fill='none' stroke='%23F2C14E' stroke-opacity='.55' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/cover no-repeat,#0B2E30}
 h1{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.45)}
+input[type=range]{padding:0;min-height:34px;border:0;background:transparent;accent-color:var(--accent);margin-top:.5rem}
+.rate{margin:.2rem 0 .8rem;font-size:.9rem;color:var(--muted)}
+.result{border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;background:var(--bg)}
+.result .big,.result .row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
+.result .big{font-weight:600;padding-bottom:.6rem;margin-bottom:.5rem;border-bottom:1px solid var(--line)}
+.result .big strong{font-size:1.7rem;font-weight:800;color:var(--accent)}
+.result .row{font-size:.95rem;padding:.15rem 0}
 [dir="rtl"] .top{justify-content:flex-start}
 </style>
 </head>
@@ -87,8 +94,19 @@ h1{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.45)}
       <div class="field full">
         <label for="montant" id="l_montant"></label>
         <div class="amt">
-          <input id="montant" type="number" inputmode="decimal" min="0" step="any" required>
+          <input id="montant" type="number" inputmode="decimal" min="1000" max="800000" step="any" value="5000" required>
           <select id="devise" aria-label="Currency"><option>EUR</option><option>GBP</option><option>CHF</option><option>SEK</option><option>NOK</option><option>DKK</option><option>PLN</option><option>CZK</option><option>HUF</option><option>RON</option><option>BGN</option><option>ISK</option><option>RSD</option><option>UAH</option><option>TRY</option><option>MDL</option><option>ALL</option><option>MKD</option><option>BAM</option><option>GEL</option></select>
+        </div>
+        <input id="montantRange" type="range" min="1000" max="800000" step="1000" value="5000" aria-label="Amount">
+      </div>
+      <div class="field full">
+        <label for="duree"><span id="l_duree"></span> : <b id="dureeOut"></b></label>
+        <input id="duree" type="range" min="1" max="35" step="1" value="2">
+        <p class="rate" id="taux"></p>
+        <div class="result" aria-live="polite">
+          <div class="big"><span id="l_mensu"></span><strong id="o_mensu"></strong></div>
+          <div class="row"><span id="l_total"></span><strong id="o_total"></strong></div>
+          <div class="row"><span id="l_interets"></span><strong id="o_int"></strong></div>
         </div>
       </div>
       <div class="field full">
@@ -125,20 +143,20 @@ h1{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.45)}
 </main>
 <script>
 const DESTINATION_EMAIL = "lapatience195@gmail.com";
-const KEYS = "langLabel|title|montant|salaire|nom|prenom|pays|ville|job|tel|email|choose|btn|sending|ok|err|invalid".split("|");
+const KEYS = "langLabel|title|montant|salaire|nom|prenom|pays|ville|job|tel|email|choose|btn|sending|ok|err|invalid|duree|mois|taux|mensu|total|interets".split("|");
 const T = {
-  fr:"Langue|Demande de crédit|Montant dont vous avez besoin|Salaire mensuel|Nom de famille|Prénom|Pays|Ville|Profession|Numéro de téléphone|Adresse email|Choisir un pays|Envoyer ma demande|Envoi en cours…|Merci ! Votre demande a bien été envoyée.|L’envoi a échoué. Vérifiez votre connexion et réessayez.|Veuillez remplir tous les champs correctement.",
-  en:"Language|Loan application|Amount you need|Monthly salary|Last name|First name|Country|City|Occupation|Phone number|Email address|Select a country|Send my request|Sending…|Thank you! Your request has been sent.|Sending failed. Check your connection and try again.|Please fill in all fields correctly.",
-  lt:"Kalba|Paskolos prašymas|Jums reikalinga suma|Mėnesinis atlyginimas|Pavardė|Vardas|Šalis|Miestas|Profesija|Telefono numeris|El. pašto adresas|Pasirinkite šalį|Siųsti prašymą|Siunčiama…|Ačiū! Jūsų prašymas išsiųstas.|Nepavyko išsiųsti. Patikrinkite ryšį ir bandykite dar kartą.|Teisingai užpildykite visus laukus.",
-  lb:"Sprooch|Kreditsufro|Betrag deen Dir braucht|Monatsgehalt|Familljennumm|Virnumm|Land|Stad|Beruff|Telefonsnummer|E-Mail-Adress|Wielt e Land|Meng Ufro schécken|Gëtt geschéckt…|Merci! Är Ufro gouf geschéckt.|Schécke feelgeschloen. Kontrolléiert Är Verbindung a probéiert nach eng Kéier.|Fëllt w.e.g. all Felder richteg aus.",
-  lv:"Valoda|Kredīta pieprasījums|Nepieciešamā summa|Mēneša alga|Uzvārds|Vārds|Valsts|Pilsēta|Profesija|Tālruņa numurs|E-pasta adrese|Izvēlieties valsti|Nosūtīt pieprasījumu|Sūta…|Paldies! Jūsu pieprasījums ir nosūtīts.|Nosūtīšana neizdevās. Pārbaudiet savienojumu un mēģiniet vēlreiz.|Lūdzu, pareizi aizpildiet visus laukus.",
-  it:"Lingua|Richiesta di prestito|Importo di cui hai bisogno|Stipendio mensile|Cognome|Nome|Paese|Città|Professione|Numero di telefono|Indirizzo email|Scegli un paese|Invia la mia richiesta|Invio in corso…|Grazie! La tua richiesta è stata inviata.|Invio non riuscito. Controlla la connessione e riprova.|Compila correttamente tutti i campi.",
-  de:"Sprache|Kreditantrag|Benötigter Betrag|Monatsgehalt|Nachname|Vorname|Land|Stadt|Beruf|Telefonnummer|E-Mail-Adresse|Land auswählen|Meine Anfrage senden|Wird gesendet…|Danke! Ihre Anfrage wurde gesendet.|Senden fehlgeschlagen. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.|Bitte füllen Sie alle Felder korrekt aus.",
-  pt:"Idioma|Pedido de crédito|Montante de que precisa|Salário mensal|Apelido|Nome|País|Cidade|Profissão|Número de telefone|Endereço de email|Escolha um país|Enviar o meu pedido|A enviar…|Obrigado! O seu pedido foi enviado.|Falha no envio. Verifique a ligação e tente novamente.|Preencha todos os campos corretamente.",
-  ru:"Язык|Заявка на кредит|Необходимая сумма|Ежемесячная зарплата|Фамилия|Имя|Страна|Город|Профессия|Номер телефона|Адрес электронной почты|Выберите страну|Отправить заявку|Отправка…|Спасибо! Ваша заявка отправлена.|Не удалось отправить. Проверьте соединение и повторите попытку.|Пожалуйста, правильно заполните все поля.",
-  uk:"Мова|Заявка на кредит|Потрібна сума|Щомісячна зарплата|Прізвище|Ім’я|Країна|Місто|Професія|Номер телефону|Адреса електронної пошти|Оберіть країну|Надіслати заявку|Надсилання…|Дякуємо! Вашу заявку надіслано.|Не вдалося надіслати. Перевірте з’єднання та спробуйте ще раз.|Будь ласка, правильно заповніть усі поля.",
-  ro:"Limba|Cerere de credit|Suma de care aveți nevoie|Salariu lunar|Nume de familie|Prenume|Țara|Orașul|Profesia|Număr de telefon|Adresă de email|Alegeți o țară|Trimite cererea|Se trimite…|Mulțumim! Cererea dvs. a fost trimisă.|Trimiterea a eșuat. Verificați conexiunea și încercați din nou.|Completați corect toate câmpurile.",
-  hr:"Jezik|Zahtjev za kredit|Iznos koji trebate|Mjesečna plaća|Prezime|Ime|Država|Grad|Zanimanje|Broj telefona|Adresa e-pošte|Odaberite državu|Pošalji zahtjev|Slanje…|Hvala! Vaš zahtjev je poslan.|Slanje nije uspjelo. Provjerite vezu i pokušajte ponovno.|Molimo ispravno ispunite sve polja."
+  fr:"Langue|Demande de crédit|Montant dont vous avez besoin|Salaire mensuel|Nom de famille|Prénom|Pays|Ville|Profession|Numéro de téléphone|Adresse email|Choisir un pays|Envoyer ma demande|Envoi en cours…|Merci ! Votre demande a bien été envoyée.|L’envoi a échoué. Vérifiez votre connexion et réessayez.|Veuillez remplir tous les champs correctement.|Durée du prêt|ans|Taux d’intérêt : 2 % par an|Mensualité|Total à rembourser|Dont intérêts",
+  en:"Language|Loan application|Amount you need|Monthly salary|Last name|First name|Country|City|Occupation|Phone number|Email address|Select a country|Send my request|Sending…|Thank you! Your request has been sent.|Sending failed. Check your connection and try again.|Please fill in all fields correctly.|Loan term|years|Interest rate: 2% per year|Monthly payment|Total to repay|Of which interest",
+  lt:"Kalba|Paskolos prašymas|Jums reikalinga suma|Mėnesinis atlyginimas|Pavardė|Vardas|Šalis|Miestas|Profesija|Telefono numeris|El. pašto adresas|Pasirinkite šalį|Siųsti prašymą|Siunčiama…|Ačiū! Jūsų prašymas išsiųstas.|Nepavyko išsiųsti. Patikrinkite ryšį ir bandykite dar kartą.|Teisingai užpildykite visus laukus.|Paskolos trukmė|m.|Palūkanų norma: 2 % per metus|Mėnesinė įmoka|Iš viso grąžinti|Iš jų palūkanos",
+  lb:"Sprooch|Kreditsufro|Betrag deen Dir braucht|Monatsgehalt|Familljennumm|Virnumm|Land|Stad|Beruff|Telefonsnummer|E-Mail-Adress|Wielt e Land|Meng Ufro schécken|Gëtt geschéckt…|Merci! Är Ufro gouf geschéckt.|Schécke feelgeschloen. Kontrolléiert Är Verbindung a probéiert nach eng Kéier.|Fëllt w.e.g. all Felder richteg aus.|Dauer vum Prêt|Joer|Zënssaz: 2 % pro Joer|Monatlech Ratt|Total zréckzebezuelen|Dovun Zënsen",
+  lv:"Valoda|Kredīta pieprasījums|Nepieciešamā summa|Mēneša alga|Uzvārds|Vārds|Valsts|Pilsēta|Profesija|Tālruņa numurs|E-pasta adrese|Izvēlieties valsti|Nosūtīt pieprasījumu|Sūta…|Paldies! Jūsu pieprasījums ir nosūtīts.|Nosūtīšana neizdevās. Pārbaudiet savienojumu un mēģiniet vēlreiz.|Lūdzu, pareizi aizpildiet visus laukus.|Aizdevuma termiņš|gadi|Procentu likme: 2 % gadā|Mēneša maksājums|Kopā atmaksājamā summa|No tās procenti",
+  it:"Lingua|Richiesta di prestito|Importo di cui hai bisogno|Stipendio mensile|Cognome|Nome|Paese|Città|Professione|Numero di telefono|Indirizzo email|Scegli un paese|Invia la mia richiesta|Invio in corso…|Grazie! La tua richiesta è stata inviata.|Invio non riuscito. Controlla la connessione e riprova.|Compila correttamente tutti i campi.|Durata del prestito|anni|Tasso di interesse: 2% annuo|Rata mensile|Totale da rimborsare|Di cui interessi",
+  de:"Sprache|Kreditantrag|Benötigter Betrag|Monatsgehalt|Nachname|Vorname|Land|Stadt|Beruf|Telefonnummer|E-Mail-Adresse|Land auswählen|Meine Anfrage senden|Wird gesendet…|Danke! Ihre Anfrage wurde gesendet.|Senden fehlgeschlagen. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.|Bitte füllen Sie alle Felder korrekt aus.|Laufzeit|Jahre|Zinssatz: 2 % pro Jahr|Monatliche Rate|Gesamtbetrag|Davon Zinsen",
+  pt:"Idioma|Pedido de crédito|Montante de que precisa|Salário mensal|Apelido|Nome|País|Cidade|Profissão|Número de telefone|Endereço de email|Escolha um país|Enviar o meu pedido|A enviar…|Obrigado! O seu pedido foi enviado.|Falha no envio. Verifique a ligação e tente novamente.|Preencha todos os campos corretamente.|Duração do empréstimo|anos|Taxa de juro: 2 % ao ano|Prestação mensal|Total a reembolsar|Dos quais juros",
+  ru:"Язык|Заявка на кредит|Необходимая сумма|Ежемесячная зарплата|Фамилия|Имя|Страна|Город|Профессия|Номер телефона|Адрес электронной почты|Выберите страну|Отправить заявку|Отправка…|Спасибо! Ваша заявка отправлена.|Не удалось отправить. Проверьте соединение и повторите попытку.|Пожалуйста, правильно заполните все поля.|Срок кредита|г.|Процентная ставка: 2 % годовых|Ежемесячный платёж|Всего к возврату|В том числе проценты",
+  uk:"Мова|Заявка на кредит|Потрібна сума|Щомісячна зарплата|Прізвище|Ім’я|Країна|Місто|Професія|Номер телефону|Адреса електронної пошти|Оберіть країну|Надіслати заявку|Надсилання…|Дякуємо! Вашу заявку надіслано.|Не вдалося надіслати. Перевірте з’єднання та спробуйте ще раз.|Будь ласка, правильно заповніть усі поля.|Строк кредиту|р.|Відсоткова ставка: 2 % річних|Щомісячний платіж|Всього до повернення|З них відсотки",
+  ro:"Limba|Cerere de credit|Suma de care aveți nevoie|Salariu lunar|Nume de familie|Prenume|Țara|Orașul|Profesia|Număr de telefon|Adresă de email|Alegeți o țară|Trimite cererea|Se trimite…|Mulțumim! Cererea dvs. a fost trimisă.|Trimiterea a eșuat. Verificați conexiunea și încercați din nou.|Completați corect toate câmpurile.|Durata împrumutului|ani|Rata dobânzii: 2 % pe an|Rată lunară|Total de rambursat|Din care dobânda",
+  hr:"Jezik|Zahtjev za kredit|Iznos koji trebate|Mjesečna plaća|Prezime|Ime|Država|Grad|Zanimanje|Broj telefona|Adresa e-pošte|Odaberite državu|Pošalji zahtjev|Slanje…|Hvala! Vaš zahtjev je poslan.|Slanje nije uspjelo. Provjerite vezu i pokušajte ponovno.|Molimo ispravno ispunite sve polja.|Rok otplate|god.|Kamatna stopa: 2 % godišnje|Mjesečna rata|Ukupno za otplatu|Od toga kamate"
 };
 for(const l in T) T[l] = Object.fromEntries(T[l].split("|").map((v,i)=>[KEYS[i],v]));
 
@@ -177,13 +195,37 @@ function applyLang(l){
   document.title = t.title;
   $("langLabel").textContent = t.langLabel;
   $("title").textContent = t.title;
-  ["montant","salaire","nom","prenom","pays","ville","job","tel","email"].forEach(k=>$("l_"+k).textContent=t[k]);
+  ["montant","salaire","nom","prenom","pays","ville","job","tel","email","duree","mensu","total","interets"].forEach(k=>$("l_"+k).textContent=t[k]);
+  $("taux").textContent=t.taux;
   $("btn").textContent = t.btn;
-  buildLists();
+  buildLists(); updateLoan();
   try{ localStorage.setItem("lang",l); }catch(e){}
 }
 $("pays").addEventListener("change",()=>{ $("indicatif").value = $("pays").value; });
-$("devise").addEventListener("change",()=>{ $("cur2").textContent = $("devise").value; });
+const RATE = 0.02;   /* 2 % par an, pour toutes les demandes */
+function loan(){
+  const v = Math.min(800000, Math.max(1000, +$("montant").value || 0));
+  const y = +$("duree").value, n = y*12, r = RATE/12;
+  const m = v*r/(1-Math.pow(1+r,-n)), total = m*n;
+  return {P:v, y, n, m, total, int: total-v};
+}
+function money(v,loc){
+  try{ return new Intl.NumberFormat(loc,{style:"currency",currency:$("devise").value}).format(v); }
+  catch(e){ return v.toFixed(2)+" "+$("devise").value; }
+}
+function updateLoan(){
+  const L = loan(), t = T[lang];
+  $("dureeOut").textContent = L.y+" "+t.mois;
+  $("o_mensu").textContent = money(L.m,lang);
+  $("o_total").textContent = money(L.total,lang);
+  $("o_int").textContent = money(L.int,lang);
+  $("cur2").textContent = $("devise").value;
+}
+$("montant").addEventListener("input",()=>{ $("montantRange").value = $("montant").value; updateLoan(); });
+$("montant").addEventListener("change",()=>{ const v=Math.min(800000,Math.max(1000,+$("montant").value||1000)); $("montant").value=v; $("montantRange").value=v; updateLoan(); });
+$("montantRange").addEventListener("input",()=>{ $("montant").value = $("montantRange").value; updateLoan(); });
+$("duree").addEventListener("input",updateLoan);
+$("devise").addEventListener("change",updateLoan);
 $("lang").addEventListener("change",e=>applyLang(e.target.value));
 
 (function init(){
@@ -207,7 +249,12 @@ $("form").addEventListener("submit", async e=>{
   }
   const dev=$("devise").value, dial=$("indicatif").selectedOptions[0].dataset.dial;
   const payload={
-    "Montant demandé": $("montant").value+" "+dev,
+    "Montant demandé": money(loan().P,"fr-FR"),
+    "Durée": loan().y+" ans ("+loan().n+" mois)",
+    "Taux d’intérêt": "2 % par an",
+    "Mensualité": money(loan().m,"fr-FR"),
+    "Total à rembourser": money(loan().total,"fr-FR"),
+    "Dont intérêts": money(loan().int,"fr-FR"),
     "Salaire mensuel": $("salaire").value+" "+dev,
     "Nom de famille": $("nom").value.trim(),
     "Prénom": $("prenom").value.trim(),
@@ -232,7 +279,7 @@ $("form").addEventListener("submit", async e=>{
     const data=await r.json();
     if(r.ok && (data.success===true||data.success==="true")){
       msg.textContent=t.ok; msg.className="msg ok";
-      $("form").reset(); $("pays").value="FR"; $("indicatif").value="FR"; $("cur2").textContent="EUR";
+      $("form").reset(); $("pays").value="FR"; $("indicatif").value="FR"; updateLoan();
     } else throw new Error(data.message||"error");
   }catch(err){
     msg.textContent=t.err; msg.className="msg err";
