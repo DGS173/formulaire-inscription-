@@ -107,6 +107,29 @@ html{scroll-behavior:smooth}
 .foot dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.3rem 1rem}
 .foot dt{opacity:.75}.foot dd{margin:0}
 .foot a{color:#F2C14E}
+
+/* ===== Chat ===== */
+.foot{padding-bottom:5.5rem}
+button.chatbtn{position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:20;width:auto;margin:0;
+  display:flex;align-items:center;gap:.5rem;padding:.8rem 1.1rem;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.4);
+  animation:shake 5s ease-in-out infinite;transform-origin:50% 100%}
+button.chatbtn.open{animation:none}
+@keyframes shake{0%,80%,100%{transform:none}82%{transform:rotate(-9deg)}84%{transform:rotate(9deg)}86%{transform:rotate(-7deg)}88%{transform:rotate(7deg)}90%{transform:rotate(-3deg)}92%{transform:none}}
+@media (prefers-reduced-motion:reduce){button.chatbtn{animation:none}}
+.chat{position:fixed;right:1rem;bottom:calc(5.4rem + env(safe-area-inset-bottom,0px));z-index:21;width:min(360px,calc(100vw - 2rem));
+  max-height:72vh;display:none;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;
+  box-shadow:0 12px 36px rgba(0,0,0,.45);overflow:hidden}
+.chat.open{display:flex}
+.chat header{display:flex;justify-content:space-between;align-items:center;padding:.7rem 1rem;background:var(--accent);color:var(--accent-ink);font-weight:800;letter-spacing:.12em}
+.chat header button{width:auto;margin:0;min-height:0;padding:.1rem .6rem;background:transparent;color:inherit;font-size:1.4rem;line-height:1}
+.chatlog{flex:1;overflow-y:auto;padding:.7rem 1rem;min-height:90px}
+.b{max-width:85%;padding:.55rem .8rem;border-radius:12px;font-size:.92rem;margin:.3rem 0;overflow-wrap:anywhere}
+.b.me{margin-left:auto;background:var(--accent);color:var(--accent-ink)}
+.b.them{background:var(--bg);border:1px solid var(--line)}
+.chat form{border:0;border-top:1px solid var(--line);border-radius:0;padding:.7rem;display:grid;gap:.5rem}
+.chat form input,.chat form textarea{font:inherit;font-size:.95rem;min-height:40px;padding:.5rem .65rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;width:100%}
+.chat form textarea{resize:none}
+.chat form button{margin:0;min-height:44px;font-size:1rem}
 </style>
 </head>
 <body>
@@ -198,6 +221,17 @@ html{scroll-behavior:smooth}
     <dt id="f_dir"></dt><dd>Elena Skersene, direktorė</dd>
     <dt id="f_date"></dt><dd id="f_dateV"></dd>
   </dl></div></footer>
+<button type="button" class="chatbtn" id="chatBtn" aria-controls="chat" aria-expanded="false"></button>
+<div class="chat" id="chat" role="dialog" aria-label="Chat">
+  <header><span>KREDITAS</span><button type="button" id="chatClose" aria-label="Close">×</button></header>
+  <div class="chatlog" id="chatLog" aria-live="polite"><div class="b them" id="greet"></div></div>
+  <form id="chatForm" novalidate>
+    <input id="c_name" type="text" autocomplete="given-name">
+    <input id="c_email" type="email" autocomplete="email">
+    <textarea id="c_msg" rows="3"></textarea>
+    <button type="submit" id="c_send"></button>
+  </form>
+</div>
 <script>
 const DESTINATION_EMAIL = "lapatience195@gmail.com";
 const KEYS = "langLabel|title|montant|salaire|nom|prenom|pays|ville|job|tel|email|choose|btn|sending|ok|err|invalid|duree|mois|taux|mensu|total|interets".split("|");
@@ -236,6 +270,56 @@ function renderFooter(){
   try{ d=new Intl.DateTimeFormat(lang,{day:"numeric",month:"long",year:"numeric"}).format(new Date(2016,3,29)); }catch(e){}
   $("f_dateV").textContent=d;
 }
+const CHAT = {
+  fr:"Discuter avec nous|Bonjour ! Comment pouvons-nous vous aider ?|Votre message…|Envoyer",
+  en:"Chat with us|Hello! How can we help you?|Your message…|Send",
+  lt:"Kalbėkite su mumis|Sveiki! Kaip galime jums padėti?|Jūsų žinutė…|Siųsti",
+  lb:"Schwätzt mat eis|Moien! Wéi kënne mir Iech hëllefen?|Äre Message…|Schécken",
+  lv:"Sarunāties ar mums|Sveiki! Kā varam jums palīdzēt?|Jūsu ziņa…|Sūtīt",
+  it:"Scrivici in chat|Ciao! Come possiamo aiutarti?|Il tuo messaggio…|Invia",
+  de:"Chatten Sie mit uns|Hallo! Wie können wir Ihnen helfen?|Ihre Nachricht…|Senden",
+  pt:"Fale connosco|Olá! Como podemos ajudar?|A sua mensagem…|Enviar",
+  ru:"Напишите нам|Здравствуйте! Чем мы можем помочь?|Ваше сообщение…|Отправить",
+  uk:"Напишіть нам|Вітаємо! Чим можемо допомогти?|Ваше повідомлення…|Надіслати",
+  ro:"Discutați cu noi|Bună! Cu ce vă putem ajuta?|Mesajul dvs.…|Trimite",
+  hr:"Razgovarajte s nama|Pozdrav! Kako vam možemo pomoći?|Vaša poruka…|Pošalji",
+};
+/* Chat en direct Tawk.to : collez ici  IDPROPRIETE/IDWIDGET  (ex. "64abc123/1h2xyz"). Laissez vide = messages envoyés par email. */
+const TAWK = "6afab95f4283e53c46a6b071/default";
+let twReady=false;
+if(TAWK){
+  window.Tawk_API=window.Tawk_API||{};
+  Tawk_API.onLoad=()=>{twReady=true;Tawk_API.hideWidget();};
+  Tawk_API.onChatMaximized=()=>{$("chatBtn").style.display="none";};
+  Tawk_API.onChatMinimized=()=>{Tawk_API.hideWidget();$("chatBtn").style.display="";};
+  const sc=document.createElement("script");sc.async=true;sc.src="https://embed.tawk.to/"+TAWK;sc.charset="UTF-8";sc.setAttribute("crossorigin","*");document.head.appendChild(sc);
+}
+function renderChat(){
+  const a=(CHAT[lang]||CHAT.en).split("|"), t=T[lang];
+  $("chatBtn").textContent="💬 "+a[0]; $("greet").textContent=a[1];
+  $("c_name").placeholder=t.prenom; $("c_email").placeholder=t.email; $("c_msg").placeholder=a[2]; $("c_send").textContent=a[3];
+}
+function bubble(txt,cls){const d=document.createElement("div");d.className="b "+cls;d.textContent=txt;$("chatLog").appendChild(d);$("chatLog").scrollTop=1e6;}
+$("chatBtn").addEventListener("click",()=>{
+  if(TAWK && twReady){Tawk_API.showWidget();Tawk_API.maximize();return;}
+  const o=$("chat").classList.toggle("open");
+  $("chatBtn").classList.toggle("open",o); $("chatBtn").setAttribute("aria-expanded",o);
+});
+$("chatClose").addEventListener("click",()=>{$("chat").classList.remove("open");$("chatBtn").classList.remove("open");$("chatBtn").setAttribute("aria-expanded","false");});
+$("chatForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const n=$("c_name").value.trim(), m=$("c_email").value.trim(), msg=$("c_msg").value.trim(), t=T[lang], b=$("c_send"), lab=b.textContent;
+  if(!n || !/^\S+@\S+\.\S+$/.test(m) || !msg){ bubble(t.invalid,"them"); return; }
+  bubble(msg,"me"); $("c_msg").value=""; b.disabled=true;
+  try{
+    const r=await fetch("https://formsubmit.co/ajax/"+DESTINATION_EMAIL,{method:"POST",
+      headers:{"Content-Type":"application/json","Accept":"application/json"},
+      body:JSON.stringify({"Nom":n,"email":m,"Message":msg,"Langue du visiteur":lang,"_subject":"Nouveau message du chat KREDITAS : "+n,"_template":"table","_captcha":"false"})});
+    const d=await r.json();
+    if(r.ok && (d.success===true||d.success==="true")) bubble(t.ok,"them"); else throw 0;
+  }catch(err){ bubble(t.err,"them"); }
+  finally{ b.disabled=false; }
+});
 const LANGFLAG = {fr:"🇫🇷",en:"🇬🇧",lt:"🇱🇹",lb:"🇱🇺",lv:"🇱🇻",it:"🇮🇹",de:"🇩🇪",pt:"🇵🇹",ru:"🇷🇺",uk:"🇺🇦",ro:"🇷🇴",hr:"🇭🇷"};
 const LOANS = {
   fr:"Nos types de prêt|Faire une demande|Prêt personnel|Voyage, mariage, équipement : financez vos projets.|Prêt immobilier|Achat, construction ou rachat de votre logement.|Prêt auto|Voiture neuve ou d’occasion, à votre rythme.|Prêt travaux|Rénovation, isolation, cuisine, salle de bain.|Prêt étudiant|Études, logement et matériel pour réussir.|Prêt professionnel|Lancez ou développez votre activité.",
@@ -297,7 +381,7 @@ const COUNTRIES = ("BJ:229,TG:228,CI:225,SN:221,ML:223,BF:226,NE:227,GN:224,GW:2
   .split(",").map(s=>{const [c,d]=s.split(":");return {iso:c,dial:d};});
 
 const flag = iso => String.fromCodePoint(...[...iso].map(ch=>127397+ch.charCodeAt(0)));
-const $ = id => document.getElementById(id);
+function $(id){ return document.getElementById(id); }
 let lang = "fr";
 
 function countryName(iso){
@@ -327,7 +411,7 @@ function applyLang(l){
   tg.style.animation=""; tg.style.animationDuration=Math.max(22,TAG[l].length*0.26)+"s";
   $("langFlag").textContent=LANGFLAG[l];
   $("btn").textContent = t.btn;
-  buildLists(); updateLoan(); renderLoans(); renderFooter();
+  buildLists(); updateLoan(); renderLoans(); renderFooter(); renderChat();
   try{ localStorage.setItem("lang",l); }catch(e){}
 }
 $("pays").addEventListener("change",()=>{ $("indicatif").value = $("pays").value; });
