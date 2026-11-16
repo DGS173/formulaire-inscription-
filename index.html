@@ -137,6 +137,28 @@ button.chatbtn.open{animation:none}
 .eu-track span{font-size:2.3rem;line-height:1;margin:0 .9rem}
 @keyframes euLeft{from{transform:translateX(0)}to{transform:translateX(-16.6667%)}}
 @media (prefers-reduced-motion:reduce){.eu-track{animation:none;flex-wrap:wrap;width:auto;justify-content:center}.eu-track span:nth-child(n+29){display:none}}
+[hidden]{display:none!important}
+/* ===== Espace client ===== */
+.space{padding:1.2rem 1rem 0}
+.space .in{max-width:640px;margin:0 auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:1.2rem}
+.space h2{margin:0 0 .8rem;font-size:1.25rem}
+.space form{border:0;padding:0;display:grid;gap:.6rem;background:transparent;box-shadow:none}
+.space .st{margin:1rem 0 .5rem;font-weight:600}
+.space .st.ok{color:var(--ok)}
+.space button,.space .fileBtn{margin:.4rem 0 0}
+.foot a#sp_link{display:inline-block;margin-top:1rem}
+.consent{display:flex;gap:.6rem;align-items:flex-start;margin-top:1.1rem;font-size:.9rem}
+.consent input{width:auto;min-height:0;margin-top:.25rem;flex:0 0 auto}
+details.priv{margin-top:.5rem;font-size:.85rem}
+details.priv summary{cursor:pointer;color:var(--accent);font-weight:600}
+.steps{display:flex;gap:.25rem;list-style:none;padding:0;margin:.4rem 0 1rem;font-size:.7rem}
+.steps li{flex:1;text-align:center;opacity:.5;border-top:4px solid var(--line);padding-top:.35rem}
+.steps li.on{opacity:1;border-color:var(--accent);font-weight:700}
+.thread{max-height:260px;overflow-y:auto;margin:.5rem 0}
+.thread small{display:block;opacity:.6;font-size:.7rem;margin-top:.15rem}
+.thread .b.me small{text-align:right}
+.msgform{display:grid;gap:.4rem;margin-top:.5rem}
+.msgform textarea{font:inherit;min-height:70px;padding:.5rem .65rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;width:100%;resize:none}
 </style>
 </head>
 <body>
@@ -202,9 +224,11 @@ button.chatbtn.open{animation:none}
       <div class="field"><label for="pays" id="l_pays"></label>
         <select id="pays" required></select></div>
       <div class="field"><label for="ville" id="l_ville"></label>
-        <input id="ville" type="text" autocomplete="address-level2" required></div>
+        <select id="villeSel" required hidden></select>
+        <input id="ville" type="text" autocomplete="address-level2" maxlength="80" hidden></div>
       <div class="field full"><label for="job" id="l_job"></label>
-        <input id="job" type="text" autocomplete="organization-title" required></div>
+        <select id="jobSel" required></select>
+        <input id="job" type="text" autocomplete="organization-title" maxlength="80" hidden style="margin-top:.5rem"></div>
       <div class="field full">
         <label for="tel" id="l_tel"></label>
         <div class="phone">
@@ -216,10 +240,21 @@ button.chatbtn.open{animation:none}
         <input id="email" type="email" autocomplete="email" required></div>
     </div>
     <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <label class="consent"><input type="checkbox" id="consent" required><span id="consentTxt"></span></label>
+    <details class="priv"><summary id="privSum"></summary><p id="privBody"></p></details>
     <button type="submit" id="btn"></button>
     <div id="msg" class="msg" role="status" aria-live="polite"></div>
   </form>
 </main>
+<section class="space" id="space" hidden><div class="in">
+  <h2 id="sp_title"></h2>
+  <form id="sp_form" novalidate>
+    <input id="sp_ref" type="text" autocomplete="off" autocapitalize="characters" maxlength="14">
+    <input id="sp_email" type="email" autocomplete="email">
+    <button type="submit" id="sp_go"></button>
+  </form>
+  <div id="sp_out" aria-live="polite"></div>
+</div></section>
 <div class="eu" aria-hidden="true"><div class="eu-track" id="euTrack"></div></div>
 <footer class="foot"><div class="in"><strong>KREDITAS</strong>
   <dl>
@@ -228,7 +263,7 @@ button.chatbtn.open{animation:none}
     <dt id="f_mail"></dt><dd><a href="mailto:contact@kreditas.online">contact@kreditas.online</a></dd>
     <dt id="f_dir"></dt><dd>Elena Skersene, direktorė</dd>
     <dt id="f_date"></dt><dd id="f_dateV"></dd>
-  </dl></div></footer>
+  </dl><a href="#space" id="sp_link" hidden></a></div></footer>
 <button type="button" class="chatbtn" id="chatBtn" aria-controls="chat" aria-expanded="false"></button>
 <div class="chat" id="chat" role="dialog" aria-label="Chat">
   <header><span>KREDITAS</span><button type="button" id="chatClose" aria-label="Close">×</button></header>
@@ -344,6 +379,169 @@ if(ONESIGNAL_APP_ID){
   });
   const os=document.createElement("script"); os.defer=true; os.src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"; document.head.appendChild(os);
 }
+const CITIES = {"BJ": "Cotonou,Porto-Novo,Parakou,Abomey-Calavi,Djougou,Bohicon,Natitingou,Lokossa,Ouidah,Kandi", "TG": "Lomé,Sokodé,Kara,Atakpamé,Kpalimé,Dapaong,Tsévié,Aného", "CI": "Abidjan,Bouaké,Yamoussoukro,Daloa,San-Pédro,Korhogo,Man,Gagnoa,Abengourou,Divo", "SN": "Dakar,Touba,Thiès,Rufisque,Saint-Louis,Kaolack,Ziguinchor,Mbour,Diourbel,Louga", "ML": "Bamako,Sikasso,Mopti,Koutiala,Ségou,Kayes,Gao,Tombouctou", "BF": "Ouagadougou,Bobo-Dioulasso,Koudougou,Banfora,Ouahigouya,Kaya,Dédougou", "NE": "Niamey,Zinder,Maradi,Agadez,Tahoua,Dosso", "GN": "Conakry,Nzérékoré,Kankan,Kindia,Labé,Siguiri", "GW": "Bissau,Bafatá,Gabú", "GM": "Banjul,Serekunda,Brikama", "LR": "Monrovia,Gbarnga,Buchanan", "SL": "Freetown,Bo,Kenema,Makeni", "GH": "Accra,Kumasi,Tamale,Takoradi,Cape Coast,Sunyani,Ho,Tema", "NG": "Lagos,Abuja,Kano,Ibadan,Port Harcourt,Benin City,Kaduna,Enugu,Jos,Ilorin,Abeokuta,Onitsha,Warri,Owerri,Maiduguri", "CM": "Douala,Yaoundé,Garoua,Bamenda,Maroua,Bafoussam,Ngaoundéré,Bertoua,Limbé", "TD": "N'Djamena,Moundou,Sarh,Abéché", "CF": "Bangui,Bimbo,Berbérati", "CG": "Brazzaville,Pointe-Noire,Dolisie", "CD": "Kinshasa,Lubumbashi,Mbuji-Mayi,Kisangani,Goma,Bukavu,Kananga,Kolwezi,Likasi", "GA": "Libreville,Port-Gentil,Franceville,Oyem", "GQ": "Malabo,Bata", "ST": "São Tomé", "AO": "Luanda,Huambo,Lobito,Benguela,Lubango,Cabinda", "MG": "Antananarivo,Toamasina,Antsirabe,Mahajanga,Fianarantsoa,Toliara", "MU": "Port-Louis,Curepipe,Vacoas,Quatre Bornes", "SC": "Victoria", "KM": "Moroni", "DJ": "Djibouti", "RW": "Kigali,Butare,Gisenyi", "BI": "Bujumbura,Gitega", "UG": "Kampala,Entebbe,Gulu,Mbarara,Jinja", "KE": "Nairobi,Mombasa,Kisumu,Nakuru,Eldoret", "TZ": "Dar es Salaam,Dodoma,Arusha,Mwanza,Zanzibar", "ET": "Addis Ababa,Dire Dawa,Mekelle,Gondar,Bahir Dar", "SO": "Mogadishu,Hargeisa,Kismayo", "SD": "Khartoum,Omdurman,Port Sudan", "SS": "Juba", "EG": "Cairo,Alexandria,Giza,Luxor,Aswan,Port Said,Suez,Mansoura", "LY": "Tripoli,Benghazi,Misrata", "TN": "Tunis,Sfax,Sousse,Kairouan,Bizerte,Gabès", "DZ": "Algiers,Oran,Constantine,Annaba,Blida,Batna,Sétif,Tlemcen", "MA": "Casablanca,Rabat,Marrakech,Fès,Tanger,Agadir,Meknès,Oujda,Tétouan", "MR": "Nouakchott,Nouadhibou", "CV": "Praia,Mindelo", "ZA": "Johannesburg,Cape Town,Durban,Pretoria,Port Elizabeth,Bloemfontein", "NA": "Windhoek,Walvis Bay", "BW": "Gaborone,Francistown", "ZW": "Harare,Bulawayo", "ZM": "Lusaka,Ndola,Kitwe", "MW": "Lilongwe,Blantyre", "MZ": "Maputo,Beira,Nampula", "LS": "Maseru", "SZ": "Mbabane", "FR": "Paris,Marseille,Lyon,Toulouse,Nice,Nantes,Montpellier,Strasbourg,Bordeaux,Lille,Rennes,Reims,Toulon,Saint-Étienne,Le Havre,Grenoble,Dijon,Angers,Nîmes,Villeurbanne,Clermont-Ferrand,Le Mans,Aix-en-Provence,Brest,Tours,Amiens,Limoges,Perpignan,Metz,Besançon,Orléans,Rouen,Mulhouse,Caen,Nancy,Avignon,Poitiers,La Rochelle,Cannes,Pau", "BE": "Brussels,Antwerp,Ghent,Charleroi,Liège,Bruges,Namur,Leuven,Mons", "CH": "Zurich,Geneva,Basel,Lausanne,Bern,Winterthur,Lucerne,St. Gallen,Lugano", "LU": "Luxembourg,Esch-sur-Alzette,Differdange,Dudelange", "DE": "Berlin,Hamburg,Munich,Cologne,Frankfurt,Stuttgart,Düsseldorf,Leipzig,Dortmund,Essen,Bremen,Dresden,Hanover,Nuremberg,Duisburg,Bochum,Wuppertal,Bielefeld,Bonn,Münster,Karlsruhe,Mannheim,Augsburg,Wiesbaden,Kiel", "IT": "Rome,Milan,Naples,Turin,Palermo,Genoa,Bologna,Florence,Bari,Catania,Venice,Verona,Messina,Padua,Trieste,Brescia,Parma,Modena,Reggio Calabria,Perugia,Cagliari,Livorno,Ravenna,Rimini,Salerno,Pisa", "ES": "Madrid,Barcelona,Valencia,Seville,Zaragoza,Málaga,Murcia,Palma,Las Palmas,Bilbao,Alicante,Córdoba,Valladolid,Vigo,Gijón,Granada,A Coruña,Vitoria-Gasteiz,Elche,Oviedo,Santa Cruz de Tenerife,Pamplona,San Sebastián,Santander", "PT": "Lisbon,Porto,Braga,Coimbra,Funchal,Faro,Setúbal,Aveiro,Évora,Amadora", "GB": "London,Birmingham,Manchester,Glasgow,Liverpool,Leeds,Sheffield,Edinburgh,Bristol,Cardiff,Belfast,Newcastle,Nottingham,Leicester,Southampton,Brighton,Oxford,Cambridge,Aberdeen,Plymouth,Swansea,York,Derby,Coventry", "IE": "Dublin,Cork,Limerick,Galway,Waterford,Drogheda,Dundalk", "NL": "Amsterdam,Rotterdam,The Hague,Utrecht,Eindhoven,Groningen,Tilburg,Almere,Breda,Nijmegen", "AT": "Vienna,Graz,Linz,Salzburg,Innsbruck,Klagenfurt", "SE": "Stockholm,Gothenburg,Malmö,Uppsala,Västerås,Örebro,Linköping", "NO": "Oslo,Bergen,Trondheim,Stavanger,Tromsø", "DK": "Copenhagen,Aarhus,Odense,Aalborg", "FI": "Helsinki,Espoo,Tampere,Vantaa,Oulu,Turku", "PL": "Warsaw,Kraków,Łódź,Wrocław,Poznań,Gdańsk,Szczecin,Lublin,Katowice,Bydgoszcz,Białystok", "CZ": "Prague,Brno,Ostrava,Plzeň,Liberec,Olomouc", "RO": "Bucharest,Cluj-Napoca,Timișoara,Iași,Constanța,Craiova,Brașov,Galați,Ploiești,Oradea", "GR": "Athens,Thessaloniki,Patras,Heraklion,Larissa,Volos,Rhodes", "TR": "Istanbul,Ankara,Izmir,Bursa,Antalya,Adana,Konya,Gaziantep,Kayseri,Mersin", "RU": "Moscow,Saint Petersburg,Novosibirsk,Yekaterinburg,Kazan,Nizhny Novgorod,Chelyabinsk,Samara,Omsk,Rostov-on-Don,Ufa,Krasnoyarsk,Voronezh,Perm,Volgograd,Krasnodar,Sochi", "UA": "Kyiv,Kharkiv,Odesa,Dnipro,Lviv,Zaporizhzhia,Vinnytsia,Poltava,Chernihiv,Uzhhorod", "US": "New York,Los Angeles,Chicago,Houston,Phoenix,Philadelphia,San Antonio,San Diego,Dallas,San Jose,Austin,Jacksonville,Fort Worth,Columbus,Charlotte,San Francisco,Indianapolis,Seattle,Denver,Washington,Boston,Nashville,Detroit,Portland,Las Vegas,Miami,Atlanta,Orlando,Minneapolis,New Orleans", "CA": "Toronto,Montréal,Vancouver,Calgary,Edmonton,Ottawa,Winnipeg,Québec,Hamilton,Halifax,Victoria,Saskatoon", "MX": "Mexico City,Guadalajara,Monterrey,Puebla,Tijuana,León,Juárez,Cancún,Mérida,Querétaro", "BR": "São Paulo,Rio de Janeiro,Brasília,Salvador,Fortaleza,Belo Horizonte,Manaus,Curitiba,Recife,Porto Alegre,Belém,Goiânia", "AR": "Buenos Aires,Córdoba,Rosario,Mendoza,La Plata,Tucumán,Mar del Plata,Salta", "CL": "Santiago,Valparaíso,Concepción,Antofagasta,Viña del Mar,Temuco", "CO": "Bogotá,Medellín,Cali,Barranquilla,Cartagena,Bucaramanga", "PE": "Lima,Arequipa,Trujillo,Cusco,Chiclayo,Piura", "VE": "Caracas,Maracaibo,Valencia,Barquisimeto,Maracay", "HT": "Port-au-Prince,Cap-Haïtien,Gonaïves,Les Cayes", "DO": "Santo Domingo,Santiago,Punta Cana,La Romana", "CU": "Havana,Santiago de Cuba,Camagüey,Holguín", "JM": "Kingston,Montego Bay,Spanish Town", "GP": "Pointe-à-Pitre,Les Abymes,Basse-Terre,Baie-Mahault", "MQ": "Fort-de-France,Le Lamentin,Schœlcher", "GF": "Cayenne,Kourou,Saint-Laurent-du-Maroni", "RE": "Saint-Denis,Saint-Paul,Saint-Pierre,Le Tampon", "AE": "Dubai,Abu Dhabi,Sharjah,Al Ain,Ajman", "SA": "Riyadh,Jeddah,Mecca,Medina,Dammam,Khobar", "QA": "Doha,Al Rayyan", "KW": "Kuwait City,Hawalli", "LB": "Beirut,Tripoli,Sidon,Tyre", "JO": "Amman,Zarqa,Irbid,Aqaba", "IL": "Jerusalem,Tel Aviv,Haifa,Beersheba", "IQ": "Baghdad,Basra,Mosul,Erbil", "IR": "Tehran,Mashhad,Isfahan,Shiraz,Tabriz", "IN": "Mumbai,Delhi,Bangalore,Hyderabad,Chennai,Kolkata,Ahmedabad,Pune,Jaipur,Surat,Lucknow", "PK": "Karachi,Lahore,Islamabad,Faisalabad,Rawalpindi,Peshawar", "BD": "Dhaka,Chittagong,Khulna,Sylhet", "CN": "Shanghai,Beijing,Guangzhou,Shenzhen,Chengdu,Wuhan,Hangzhou,Chongqing,Tianjin,Xi'an,Nanjing", "JP": "Tokyo,Osaka,Yokohama,Nagoya,Sapporo,Fukuoka,Kobe,Kyoto", "KR": "Seoul,Busan,Incheon,Daegu,Daejeon", "VN": "Ho Chi Minh City,Hanoi,Da Nang,Hai Phong", "TH": "Bangkok,Chiang Mai,Phuket,Pattaya", "MY": "Kuala Lumpur,George Town,Johor Bahru", "SG": "Singapore", "ID": "Jakarta,Surabaya,Bandung,Medan,Bali", "PH": "Manila,Quezon City,Cebu,Davao", "AU": "Sydney,Melbourne,Brisbane,Perth,Adelaide,Canberra", "NZ": "Auckland,Wellington,Christchurch", "AL": "Tirana,Durrës,Vlorë,Shkodër", "AD": "Andorra la Vella,Escaldes-Engordany", "AM": "Yerevan,Gyumri", "AZ": "Baku,Ganja", "BY": "Minsk,Gomel,Brest,Grodno", "BA": "Sarajevo,Banja Luka,Mostar,Tuzla", "BG": "Sofia,Plovdiv,Varna,Burgas", "HR": "Zagreb,Split,Rijeka,Osijek,Zadar,Dubrovnik", "CY": "Nicosia,Limassol,Larnaca,Paphos", "EE": "Tallinn,Tartu,Narva", "GE": "Tbilisi,Batumi,Kutaisi", "HU": "Budapest,Debrecen,Szeged,Miskolc,Pécs", "IS": "Reykjavík,Akureyri", "XK": "Pristina,Prizren", "LV": "Riga,Daugavpils,Liepāja,Jelgava", "LI": "Vaduz,Schaan", "LT": "Vilnius,Kaunas,Klaipėda,Šiauliai,Panevėžys,Alytus", "MT": "Valletta,Sliema,Birkirkara", "MD": "Chișinău,Bălți", "MC": "Monaco", "ME": "Podgorica,Nikšić", "MK": "Skopje,Bitola", "RS": "Belgrade,Novi Sad,Niš", "SK": "Bratislava,Košice", "SI": "Ljubljana,Maribor", "SM": "San Marino", "VA": "Vatican City"};
+const JOBS = {"fr": "Salarié(e)|Fonctionnaire|Enseignant(e)|Santé / médical|Ingénieur / technicien|Informatique / numérique|Commerce / vente|Restauration / hôtellerie|Bâtiment / construction|Transport / logistique|Agriculture / pêche|Industrie / usine|Artisan|Sécurité / armée|Banque / assurance|Administration / bureau|Indépendant / freelance|Chef d’entreprise|Étudiant(e)|Retraité(e)|Sans emploi|Autre (écrire)|Écrivez votre activité|Écrivez votre ville", "en": "Employee|Civil servant|Teacher|Health / medical|Engineer / technician|IT / digital|Retail / sales|Food service / hospitality|Construction|Transport / logistics|Agriculture / fishing|Industry / factory|Craftsman|Security / military|Banking / insurance|Administration / office|Self-employed / freelance|Business owner|Student|Retired|Unemployed|Other (write it)|Write your activity|Write your city", "lt": "Darbuotojas|Valstybės tarnautojas|Mokytojas|Sveikatos priežiūra|Inžinierius / technikas|IT / skaitmeninės sritys|Prekyba / pardavimai|Maitinimas / viešbučiai|Statyba|Transportas / logistika|Žemės ūkis / žvejyba|Pramonė / gamykla|Amatininkas|Saugumas / kariuomenė|Bankai / draudimas|Administravimas / biuras|Savarankiškai dirbantis|Verslo savininkas|Studentas|Pensininkas|Bedarbis|Kita (įrašykite)|Įrašykite savo veiklą|Įrašykite savo miestą", "lb": "Employé|Fonctionnaire|Léierin / Léierer|Gesondheet / Medizin|Ingenieur / Techniker|Informatik / Digital|Handel / Verkaf|Gastronomie / Hotellerie|Bau|Transport / Logistik|Landwirtschaft / Fëscherei|Industrie / Fabréck|Handwierker|Sécherheet / Arméi|Bank / Versécherung|Administratioun / Büro|Selbststänneg / Freelance|Entrepreneur|Student|Pensionéiert|Aarbechtslos|Anerer (schreiwen)|Schreift Är Aktivitéit|Schreift Är Stad", "lv": "Darbinieks|Valsts ierēdnis|Skolotājs|Veselība / medicīna|Inženieris / tehniķis|IT / digitālā joma|Tirdzniecība / pārdošana|Ēdināšana / viesnīcas|Būvniecība|Transports / loģistika|Lauksaimniecība / zvejniecība|Rūpniecība / rūpnīca|Amatnieks|Drošība / armija|Bankas / apdrošināšana|Administrācija / birojs|Pašnodarbinātais|Uzņēmuma īpašnieks|Students|Pensionārs|Bezdarbnieks|Cits (ierakstiet)|Ierakstiet savu nodarbošanos|Ierakstiet savu pilsētu", "it": "Dipendente|Dipendente pubblico|Insegnante|Sanità / medicina|Ingegnere / tecnico|Informatica / digitale|Commercio / vendite|Ristorazione / hotel|Edilizia|Trasporti / logistica|Agricoltura / pesca|Industria / fabbrica|Artigiano|Sicurezza / militare|Banca / assicurazioni|Amministrazione / ufficio|Autonomo / freelance|Imprenditore|Studente|Pensionato|Disoccupato|Altro (scrivi)|Scrivi la tua attività|Scrivi la tua città", "de": "Angestellte(r)|Beamte(r)|Lehrer(in)|Gesundheit / Medizin|Ingenieur / Techniker|IT / Digital|Handel / Verkauf|Gastronomie / Hotellerie|Bau|Transport / Logistik|Landwirtschaft / Fischerei|Industrie / Fabrik|Handwerker|Sicherheit / Militär|Bank / Versicherung|Verwaltung / Büro|Selbstständig / Freelancer|Unternehmer(in)|Student(in)|Rentner(in)|Arbeitslos|Sonstiges (eintragen)|Tätigkeit eintragen|Stadt eintragen", "pt": "Empregado(a)|Funcionário público|Professor(a)|Saúde / medicina|Engenheiro / técnico|Informática / digital|Comércio / vendas|Restauração / hotelaria|Construção|Transporte / logística|Agricultura / pesca|Indústria / fábrica|Artesão|Segurança / militar|Banca / seguros|Administração / escritório|Independente / freelancer|Empresário(a)|Estudante|Reformado(a)|Desempregado(a)|Outro (escrever)|Escreva a sua atividade|Escreva a sua cidade", "ru": "Наёмный работник|Госслужащий|Учитель|Здравоохранение / медицина|Инженер / техник|ИТ / цифровая сфера|Торговля / продажи|Общепит / гостиничный бизнес|Строительство|Транспорт / логистика|Сельское хозяйство / рыболовство|Промышленность / завод|Ремесленник|Охрана / армия|Банки / страхование|Администрация / офис|Самозанятый / фрилансер|Владелец бизнеса|Студент|Пенсионер|Безработный|Другое (напишите)|Напишите вашу деятельность|Напишите ваш город", "uk": "Найманий працівник|Держслужбовець|Вчитель|Охорона здоров’я / медицина|Інженер / технік|ІТ / цифрова сфера|Торгівля / продажі|Харчування / готелі|Будівництво|Транспорт / логістика|Сільське господарство / рибальство|Промисловість / завод|Ремісник|Охорона / армія|Банки / страхування|Адміністрація / офіс|Самозайнята особа / фрілансер|Власник бізнесу|Студент|Пенсіонер|Безробітний|Інше (напишіть)|Напишіть вашу діяльність|Напишіть ваше місто", "ro": "Angajat|Funcționar public|Profesor|Sănătate / medicină|Inginer / tehnician|IT / digital|Comerț / vânzări|Restaurante / hoteluri|Construcții|Transport / logistică|Agricultură / pescuit|Industrie / fabrică|Meșteșugar|Securitate / armată|Bănci / asigurări|Administrație / birou|Liber profesionist / freelancer|Om de afaceri|Student|Pensionar|Șomer|Altele (scrieți)|Scrieți activitatea dvs.|Scrieți orașul dvs.", "hr": "Zaposlenik|Državni službenik|Učitelj / nastavnik|Zdravstvo / medicina|Inženjer / tehničar|IT / digitalno|Trgovina / prodaja|Ugostiteljstvo / hotelijerstvo|Građevina|Prijevoz / logistika|Poljoprivreda / ribarstvo|Industrija / tvornica|Obrtnik|Sigurnost / vojska|Banke / osiguranje|Administracija / ured|Samostalni djelatnik / freelancer|Poduzetnik|Student|Umirovljenik|Nezaposlen|Drugo (upišite)|Upišite svoju djelatnost|Upišite svoj grad"};
+const PH = {"fr": "Choisir une ville|Choisir une activité", "en": "Choose a city|Choose an activity", "lt": "Pasirinkite miestą|Pasirinkite veiklą", "lb": "Stad auswielen|Aktivitéit auswielen", "lv": "Izvēlieties pilsētu|Izvēlieties nodarbošanos", "it": "Scegli una città|Scegli un’attività", "de": "Stadt wählen|Tätigkeit wählen", "pt": "Escolher cidade|Escolher atividade", "ru": "Выберите город|Выберите деятельность", "uk": "Виберіть місто|Виберіть діяльність", "ro": "Alegeți orașul|Alegeți activitatea", "hr": "Odaberite grad|Odaberite djelatnost"};
+const phTxt = i => (PH[lang]||PH.en).split("|")[i];
+const jobTxt = i => (JOBS[lang]||JOBS.en).split("|")[i];
+function buildJobs(){
+  const cur = $("jobSel").value;
+  $("jobSel").innerHTML = `<option value="" disabled selected>${phTxt(1)}</option>` +
+    JOBS[lang].split("|").slice(0,22).map((x,i)=>`<option value="${i}">${x}</option>`).join("");
+  $("jobSel").value = cur; $("job").placeholder = jobTxt(22); jobToggle();
+}
+function jobToggle(){ const o = $("jobSel").value==="21"; $("job").hidden=!o; $("job").required=o; if(!o) $("job").value=""; }
+function jobValue(){ const v=$("jobSel").value; return v==="21" ? $("job").value.trim() : JOBS.fr.split("|")[+v]; }
+function updateCities(reset){
+  const list = CITIES[$("pays").value], sel = $("villeSel");
+  if(list){
+    const cur = reset ? "" : sel.value;
+    sel.innerHTML = `<option value="" disabled selected>${phTxt(0)}</option>` +
+      list.split(",").sort((a,b)=>a.localeCompare(b,lang)).map(x=>`<option>${x}</option>`).join("") +
+      `<option value="__other">${jobTxt(21)}</option>`;
+    sel.value = cur; sel.hidden=false; sel.required=true;
+  } else { sel.innerHTML=""; sel.hidden=true; sel.required=false; }
+  cityToggle();
+}
+function cityToggle(){
+  const t = !CITIES[$("pays").value] || $("villeSel").value==="__other";
+  $("ville").hidden=!t; $("ville").required=t; if(!t) $("ville").value=""; $("ville").placeholder=jobTxt(23);
+}
+function cityValue(){ return (!CITIES[$("pays").value] || $("villeSel").value==="__other") ? $("ville").value.trim() : $("villeSel").value; }
+$("jobSel").addEventListener("change",jobToggle);
+$("villeSel").addEventListener("change",cityToggle);
+$("pays").addEventListener("change",()=>updateCities(true));
+
+/* ---- Envoi fiable : délai max, 2 essais, copie de secours si le réseau coupe ---- */
+async function postOnce(payload){
+  const c=new AbortController(), to=setTimeout(()=>c.abort(),20000);
+  try{
+    const r=await fetch("https://formsubmit.co/ajax/"+DESTINATION_EMAIL,{method:"POST",
+      headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(payload),signal:c.signal});
+    let d={}; try{ d=await r.json(); }catch(e){}
+    return r.ok && (d.success===true||d.success==="true");
+  } finally { clearTimeout(to); }
+}
+async function sendReliable(payload){
+  for(let i=0;i<2;i++){
+    try{ if(await postOnce(payload)) return true; }catch(e){}
+    if(i===0) await new Promise(r=>setTimeout(r,1200));
+  }
+  return false;
+}
+function outboxGet(){ try{ return JSON.parse(localStorage.getItem("outbox")||"[]"); }catch(e){ return []; } }
+function outboxSet(a){ try{ localStorage.setItem("outbox",JSON.stringify(a)); }catch(e){} }
+async function flushOutbox(){
+  const a=outboxGet(); if(!a.length) return;
+  const rest=[]; for(const p of a){ if(!(await sendRequest(p))) rest.push(p); }
+  outboxSet(rest);
+}
+window.addEventListener("online",flushOutbox);
+setTimeout(flushOutbox,3000);
+/* Espace client : collez ici l'adresse (URL) de votre script Google après déploiement. Vide = désactivé. */
+const SCRIPT_URL = "";
+const SP = {"fr": "Suivre ma demande|Mon espace client|Numéro de référence (KR-…)|Voir ma demande|Votre demande est en cours d’examen.|Bonne nouvelle : votre demande est acceptée.|Demander mon contrat|Revenez dans un peu de temps : votre contrat sera disponible ici.|Votre contrat est disponible. Téléchargez-le, signez-le puis renvoyez-le ici.|Télécharger mon contrat|Envoyer le contrat signé|Contrat signé reçu. Merci !|Référence ou e-mail incorrect.|Votre numéro de référence :|Aucun contrat n’est disponible pour cette demande.", "en": "Track my request|My client area|Reference number (KR-…)|View my request|Your request is under review.|Good news: your request has been accepted.|Request my contract|Please come back in a little while: your contract will be available here.|Your contract is available. Download it, sign it, then send it back here.|Download my contract|Send the signed contract|Signed contract received. Thank you!|Incorrect reference or email.|Your reference number:|No contract is available for this request.", "lt": "Sekti mano paraišką|Mano kliento zona|Nuorodos numeris (KR-…)|Peržiūrėti paraišką|Jūsų paraiška nagrinėjama.|Gera žinia: jūsų paraiška patvirtinta.|Prašyti sutarties|Sugrįžkite po trumpo laiko: jūsų sutartis bus čia.|Jūsų sutartis paruošta. Atsisiųskite, pasirašykite ir atsiųskite čia.|Atsisiųsti sutartį|Siųsti pasirašytą sutartį|Pasirašyta sutartis gauta. Ačiū!|Neteisingas numeris arba el. paštas.|Jūsų nuorodos numeris:|Šiai paraiškai sutarties nėra.", "lb": "Meng Ufro verfolgen|Mäi Clientsraum|Referenznummer (KR-…)|Meng Ufro gesinn|Är Ufro gëtt gepréift.|Gutt Noriicht: Är Ufro ass akzeptéiert.|Mäi Kontrakt ufroen|Kommt a kuerzer Zäit zréck: Äre Kontrakt ass dann hei verfügbar.|Äre Kontrakt ass disponibel. Luet en erof, ënnerschreift en a schéckt en hei zréck.|Kontrakt eroflueden|Ënnerschriwwene Kontrakt schécken|Ënnerschriwwene Kontrakt kritt. Merci!|Referenz oder E-Mail falsch.|Är Referenznummer:|Fir dës Ufro gëtt et kee Kontrakt.", "lv": "Sekot manam pieteikumam|Mana klienta zona|Atsauces numurs (KR-…)|Skatīt pieteikumu|Jūsu pieteikums tiek izskatīts.|Labas ziņas: jūsu pieteikums ir apstiprināts.|Pieprasīt līgumu|Atgriezieties pēc brīža: jūsu līgums būs pieejams šeit.|Jūsu līgums ir gatavs. Lejupielādējiet, parakstiet un nosūtiet šeit.|Lejupielādēt līgumu|Nosūtīt parakstīto līgumu|Parakstītais līgums saņemts. Paldies!|Nepareizs numurs vai e-pasts.|Jūsu atsauces numurs:|Šim pieteikumam līgums nav pieejams.", "it": "Segui la mia richiesta|La mia area cliente|Numero di riferimento (KR-…)|Vedi la mia richiesta|La tua richiesta è in esame.|Buone notizie: la tua richiesta è stata accettata.|Richiedi il mio contratto|Torna tra poco: il tuo contratto sarà disponibile qui.|Il tuo contratto è disponibile. Scaricalo, firmalo e rinvialo qui.|Scarica il contratto|Invia il contratto firmato|Contratto firmato ricevuto. Grazie!|Riferimento o email non corretti.|Il tuo numero di riferimento:|Nessun contratto disponibile per questa richiesta.", "de": "Meinen Antrag verfolgen|Mein Kundenbereich|Referenznummer (KR-…)|Meinen Antrag ansehen|Ihr Antrag wird geprüft.|Gute Nachricht: Ihr Antrag wurde angenommen.|Vertrag anfordern|Bitte kommen Sie in Kürze wieder: Ihr Vertrag wird hier verfügbar sein.|Ihr Vertrag ist verfügbar. Laden Sie ihn herunter, unterschreiben Sie ihn und senden Sie ihn hier zurück.|Vertrag herunterladen|Unterschriebenen Vertrag senden|Unterschriebener Vertrag erhalten. Danke!|Referenz oder E-Mail falsch.|Ihre Referenznummer:|Für diesen Antrag ist kein Vertrag verfügbar.", "pt": "Acompanhar o meu pedido|A minha área de cliente|Número de referência (KR-…)|Ver o meu pedido|O seu pedido está em análise.|Boas notícias: o seu pedido foi aceite.|Pedir o meu contrato|Volte daqui a pouco: o seu contrato estará disponível aqui.|O seu contrato está disponível. Descarregue-o, assine-o e envie-o aqui.|Descarregar o contrato|Enviar o contrato assinado|Contrato assinado recebido. Obrigado!|Referência ou email incorretos.|O seu número de referência:|Não há contrato disponível para este pedido.", "ru": "Отследить заявку|Мой личный кабинет|Номер заявки (KR-…)|Посмотреть заявку|Ваша заявка рассматривается.|Хорошие новости: ваша заявка одобрена.|Запросить договор|Загляните чуть позже: договор будет доступен здесь.|Ваш договор готов. Скачайте, подпишите и отправьте обратно здесь.|Скачать договор|Отправить подписанный договор|Подписанный договор получен. Спасибо!|Неверный номер или e-mail.|Номер вашей заявки:|Для этой заявки договор недоступен.", "uk": "Відстежити заявку|Мій кабінет клієнта|Номер заявки (KR-…)|Переглянути заявку|Вашу заявку розглядають.|Гарна новина: вашу заявку схвалено.|Запросити договір|Зазирніть трохи пізніше: договір буде доступний тут.|Ваш договір готовий. Завантажте, підпишіть і надішліть сюди.|Завантажити договір|Надіслати підписаний договір|Підписаний договір отримано. Дякуємо!|Неправильний номер або e-mail.|Номер вашої заявки:|Для цієї заявки договір недоступний.", "ro": "Urmărește cererea|Spațiul meu de client|Număr de referință (KR-…)|Vezi cererea|Cererea dvs. este în analiză.|Vești bune: cererea dvs. a fost acceptată.|Solicită contractul|Reveniți peste puțin timp: contractul va fi disponibil aici.|Contractul este disponibil. Descărcați-l, semnați-l și trimiteți-l aici.|Descarcă contractul|Trimite contractul semnat|Contract semnat primit. Mulțumim!|Referință sau email incorecte.|Numărul dvs. de referință:|Pentru această cerere nu există contract.", "hr": "Prati moj zahtjev|Moj klijentski prostor|Referentni broj (KR-…)|Pogledaj zahtjev|Vaš zahtjev se pregledava.|Dobre vijesti: vaš zahtjev je odobren.|Zatraži ugovor|Vratite se uskoro: vaš ugovor bit će dostupan ovdje.|Vaš ugovor je dostupan. Preuzmite ga, potpišite i pošaljite ovdje.|Preuzmi ugovor|Pošalji potpisani ugovor|Potpisani ugovor primljen. Hvala!|Pogrešan broj ili e-mail.|Vaš referentni broj:|Za ovaj zahtjev ugovor nije dostupan."};
+const spt = i => (SP[lang]||SP.en).split("|")[i];
+let spLast=null, spTimer=null;
+function newRef(){ const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; const b=crypto.getRandomValues(new Uint8Array(8)); return "KR-"+[...b].map(x=>A[x%32]).join(""); }
+async function api(obj){
+  const c=new AbortController(), to=setTimeout(()=>c.abort(),25000);
+  try{ const r=await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify(obj),signal:c.signal}); return await r.json(); }
+  finally{ clearTimeout(to); }
+}
+const spCase = () => ({ref:$("sp_ref").value.trim().toUpperCase(), email:$("sp_email").value.trim().toLowerCase()});
+function esc(x){ return String(x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function renderSpace(){
+  $("sp_link").hidden=!SCRIPT_URL;
+  $("sp_link").textContent=spt(0); $("sp_title").textContent=spt(1); $("sp_ref").placeholder=spt(2);
+  $("sp_email").placeholder=T[lang].email; $("sp_go").textContent=spt(3);
+  if(spLast) renderStatus(spLast);
+}
+function renderStatus(r){
+  spLast=r; clearInterval(spTimer); const o=$("sp_out"); let h="";
+  if(r && r.ok && r.status==="Signé reçu" && renderThread(r.msgs)){ spTimer=setInterval(()=>lookup(true),20000); return; }
+  if(!r || !r.ok){ h=`<p class="st">${spt(12)}</p>`; }
+  else {
+    h=stepsHtml(r.status);
+    if(r.status==="Nouvelle") h+=`<p class="st">${spt(4)}</p>`;
+    else if(r.status==="Refusée") h+=`<p class="st">${spt(14)}</p>`;
+    else if(r.status==="Acceptée") h+=`<p class="st ok">${spt(5)}</p><button type="button" id="sp_ask">${spt(6)}</button>`;
+    else if(r.status==="Contrat demandé") h+=`<p class="st">⏳ ${spt(7)}</p>`;
+    else if(r.status==="Contrat prêt") h+=`<p class="st ok">${spt(8)}</p><button type="button" id="sp_dl">${spt(9)}</button>
+      <label class="fileBtn"><input type="file" id="sp_file" accept=".pdf,.jpg,.jpeg,.png" hidden><button type="button" id="sp_up">${spt(10)}</button></label>`;
+    else if(r.status==="Signé reçu") h+=`<p class="st ok">✅ ${spt(11)}</p><h3>${(CHAT[lang]||CHAT.en).split("|")[0]}</h3>
+      <div class="thread" id="sp_thread">${threadHtml(r.msgs)}</div>
+      <form class="msgform" id="sp_msgform"><textarea id="sp_msg" maxlength="1000" placeholder="${(CHAT[lang]||CHAT.en).split("|")[2]}"></textarea>
+      <button type="submit">${(CHAT[lang]||CHAT.en).split("|")[3]}</button></form>`;
+    if(r.status!=="Nouvelle" && r.status!=="Refusée") spTimer=setInterval(()=>lookup(true),20000);
+  }
+  o.innerHTML=h; const t=$("sp_thread"); if(t) t.scrollTop=t.scrollHeight;
+}
+async function lookup(silent){
+  const c=spCase(); if(!c.ref||!c.email) return;
+  try{ const r=await api({action:"statut",ref:c.ref,email:c.email}); renderStatus(r);
+    if(r&&r.ok){ try{ localStorage.setItem("kr_case",JSON.stringify(c)); }catch(e){} } }
+  catch(e){ if(!silent) $("sp_out").innerHTML=`<p class="st">${T[lang].err}</p>`; }
+}
+function showSpace(c){ $("space").hidden=false; if(c){ $("sp_ref").value=c.ref; $("sp_email").value=c.email; lookup(); } }
+$("sp_link").addEventListener("click",e=>{ e.preventDefault(); showSpace(); $("space").scrollIntoView({behavior:"smooth"}); });
+$("sp_form").addEventListener("submit",e=>{ e.preventDefault(); lookup(false); });
+$("sp_out").addEventListener("click",async e=>{
+  const id=e.target.id, c=spCase(), o=$("sp_out");
+  try{
+    if(id==="sp_ask"){ e.target.disabled=true; renderStatus(await api({action:"demander",ref:c.ref,email:c.email})); }
+    else if(id==="sp_dl"){
+      const r=await api({action:"telecharger",ref:c.ref,email:c.email});
+      if(r&&r.data){ const bin=atob(r.data), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+        const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([u],{type:r.mime||"application/pdf"})); a.download=r.name||"contrat.pdf";
+        document.body.appendChild(a); a.click(); a.remove(); }
+      else o.insertAdjacentHTML("beforeend",`<p class="st">${spt(7)}</p>`);
+    }
+    else if(id==="sp_up"){ $("sp_file").click(); }
+  }catch(err){ o.insertAdjacentHTML("beforeend",`<p class="st">${T[lang].err}</p>`); }
+});
+$("sp_out").addEventListener("submit",async e=>{
+  if(e.target.id!=="sp_msgform") return; e.preventDefault();
+  const c=spCase(), ta=$("sp_msg"), txt=ta.value.trim(); if(!txt) return; ta.value="";
+  const sb=e.target.querySelector("button"); sb.disabled=true; setTimeout(()=>{ const x=$("sp_msgform"); if(x) x.querySelector("button").disabled=false; },5000);
+  try{ renderStatus(await api({action:"message",ref:c.ref,email:c.email,text:txt})); }
+  catch(err){ ta.value=txt; $("sp_out").insertAdjacentHTML("beforeend",`<p class="st">${T[lang].err}</p>`); }
+});
+$("sp_out").addEventListener("change",async e=>{
+  if(e.target.id!=="sp_file" || !e.target.files[0]) return;
+  const f=e.target.files[0], c=spCase();
+  if(!["application/pdf","image/jpeg","image/png"].includes(f.type) || f.size>4*1024*1024){ $("sp_out").insertAdjacentHTML("beforeend",`<p class="st">${T[lang].err} (max 4 Mo)</p>`); return; }
+  try{
+    const data=await new Promise((ok,ko)=>{ const rd=new FileReader(); rd.onload=()=>ok(String(rd.result).split(",")[1]); rd.onerror=ko; rd.readAsDataURL(f); });
+    renderStatus(await api({action:"televerser",ref:c.ref,email:c.email,name:f.name,mime:f.type||"application/pdf",data}));
+  }catch(err){ $("sp_out").insertAdjacentHTML("beforeend",`<p class="st">${T[lang].err}</p>`); }
+});
+async function sendRequest(payload){
+  if(SCRIPT_URL){
+    for(let i=0;i<2;i++){
+      try{ const r=await api({action:"demande",ref:payload["Référence"],data:payload}); if(r&&r.ok) return true; }catch(e){}
+      if(i===0) await new Promise(r=>setTimeout(r,1200));
+    }
+  }
+  return await sendReliable(payload);
+}
+setTimeout(()=>{ if(SCRIPT_URL){ try{ const c=JSON.parse(localStorage.getItem("kr_case")||"null"); if(c&&c.ref) showSpace(c); }catch(e){} } },600);
+const CONS = {"fr": "J’accepte que mes données soient utilisées pour étudier ma demande de prêt.|Comment vos données sont utilisées|Nous collectons les informations du formulaire (identité, contact, situation professionnelle, montant demandé) uniquement pour étudier votre demande et préparer votre contrat. Elles sont enregistrées dans les services Google de KREDITAS, accessibles seulement à l’équipe. Pour consulter ou faire supprimer vos données : contact@kreditas.online.", "en": "I agree that my data is used to assess my loan request.|How your data is used|We collect the information in this form (identity, contact, employment, amount requested) only to assess your request and prepare your contract. It is stored in KREDITAS’s Google services, accessible only to the team. To access or delete your data: contact@kreditas.online.", "lt": "Sutinku, kad mano duomenys būtų naudojami mano paskolos paraiškai įvertinti.|Kaip naudojami jūsų duomenys|Šioje formoje pateiktą informaciją (tapatybė, kontaktai, darbas, prašoma suma) renkame tik jūsų paraiškai įvertinti ir sutarčiai parengti. Ji saugoma KREDITAS „Google“ paslaugose, prieinama tik komandai. Norėdami peržiūrėti ar ištrinti duomenis: contact@kreditas.online.", "lb": "Ech si averstan, dass meng Donnéeë benotzt ginn, fir meng Prêt-Ufro ze préiwen.|Wéi Är Donnéeë benotzt ginn|Mir sammelen d’Informatioune vun dësem Formulaire (Identitéit, Kontakt, Beruff, gefrote Montant) just fir Är Ufro ze préiwen an Äre Kontrakt virzebereeden. Si ginn an de Google-Servicer vu KREDITAS gespäichert, nëmmen dem Team zougänglech. Fir Är Donnéeën anzegesinn oder ze läschen: contact@kreditas.online.", "lv": "Piekrītu, ka mani dati tiek izmantoti manam aizdevuma pieteikumam izvērtēt.|Kā tiek izmantoti jūsu dati|Šīs veidlapas informāciju (identitāte, kontakti, nodarbošanās, pieprasītā summa) vācam tikai pieteikuma izvērtēšanai un līguma sagatavošanai. Tā tiek glabāta KREDITAS Google pakalpojumos, pieejama tikai komandai. Lai piekļūtu datiem vai tos dzēstu: contact@kreditas.online.", "it": "Accetto che i miei dati siano usati per valutare la mia richiesta di prestito.|Come usiamo i tuoi dati|Raccogliamo le informazioni del modulo (identità, contatti, lavoro, importo richiesto) solo per valutare la richiesta e preparare il contratto. Sono conservate nei servizi Google di KREDITAS, accessibili solo al team. Per accedere ai dati o cancellarli: contact@kreditas.online.", "de": "Ich stimme zu, dass meine Daten zur Prüfung meines Kreditantrags verwendet werden.|Wie Ihre Daten verwendet werden|Wir erheben die Angaben aus diesem Formular (Identität, Kontakt, Beruf, gewünschter Betrag) nur, um Ihren Antrag zu prüfen und Ihren Vertrag vorzubereiten. Sie werden in den Google-Diensten von KREDITAS gespeichert und sind nur für das Team zugänglich. Auskunft oder Löschung: contact@kreditas.online.", "pt": "Aceito que os meus dados sejam usados para avaliar o meu pedido de crédito.|Como usamos os seus dados|Recolhemos as informações deste formulário (identidade, contacto, profissão, montante pedido) apenas para avaliar o pedido e preparar o contrato. Ficam guardadas nos serviços Google da KREDITAS, acessíveis só à equipa. Para consultar ou apagar os dados: contact@kreditas.online.", "ru": "Я согласен(на) на использование моих данных для рассмотрения заявки на кредит.|Как используются ваши данные|Мы собираем данные из формы (личность, контакты, работа, запрашиваемая сумма) только для рассмотрения заявки и подготовки договора. Они хранятся в сервисах Google компании KREDITAS и доступны только команде. Чтобы получить доступ к данным или удалить их: contact@kreditas.online.", "uk": "Я погоджуюся на використання моїх даних для розгляду заявки на кредит.|Як використовуються ваші дані|Ми збираємо дані з форми (особа, контакти, робота, запитувана сума) лише для розгляду заявки та підготовки договору. Вони зберігаються в сервісах Google компанії KREDITAS і доступні лише команді. Щоб отримати доступ до даних або видалити їх: contact@kreditas.online.", "ro": "Sunt de acord ca datele mele să fie folosite pentru evaluarea cererii de credit.|Cum folosim datele dvs.|Colectăm informațiile din acest formular (identitate, contact, ocupație, suma solicitată) doar pentru a evalua cererea și a pregăti contractul. Sunt stocate în serviciile Google ale KREDITAS, accesibile doar echipei. Pentru acces sau ștergere: contact@kreditas.online.", "hr": "Pristajem da se moji podaci koriste za procjenu mog zahtjeva za kredit.|Kako koristimo vaše podatke|Podatke iz ovog obrasca (identitet, kontakt, zanimanje, traženi iznos) prikupljamo samo radi procjene zahtjeva i pripreme ugovora. Pohranjeni su u Google uslugama tvrtke KREDITAS i dostupni samo timu. Za pristup ili brisanje podataka: contact@kreditas.online."};
+const STEPS = {"fr": "Reçue|Acceptée|Contrat demandé|Contrat prêt|Signé", "en": "Received|Accepted|Contract requested|Contract ready|Signed", "lt": "Gauta|Patvirtinta|Sutartis prašoma|Sutartis paruošta|Pasirašyta", "lb": "Kritt|Akzeptéiert|Kontrakt ugefrot|Kontrakt prett|Ënnerschriwwen", "lv": "Saņemts|Apstiprināts|Līgums pieprasīts|Līgums gatavs|Parakstīts", "it": "Ricevuta|Accettata|Contratto richiesto|Contratto pronto|Firmato", "de": "Erhalten|Angenommen|Vertrag angefordert|Vertrag bereit|Unterschrieben", "pt": "Recebido|Aceite|Contrato pedido|Contrato pronto|Assinado", "ru": "Получена|Одобрена|Договор запрошен|Договор готов|Подписан", "uk": "Отримано|Схвалено|Договір запрошено|Договір готовий|Підписано", "ro": "Primită|Acceptată|Contract solicitat|Contract gata|Semnat", "hr": "Primljeno|Odobreno|Ugovor zatražen|Ugovor spreman|Potpisano"};
+function renderConsent(){ const a=(CONS[lang]||CONS.en).split("|"); $("consentTxt").textContent=a[0]; $("privSum").textContent=a[1]; $("privBody").textContent=a[2]; }
+const ORDER=["Nouvelle","Acceptée","Contrat demandé","Contrat prêt","Signé reçu"];
+function stepsHtml(st){
+  const i=ORDER.indexOf(st); if(i<0) return "";
+  const lab=(STEPS[lang]||STEPS.en).split("|");
+  return `<ol class="steps">`+lab.map((x,k)=>`<li class="${k<=i?"on":""}">${k<i?"✓ ":""}${x}</li>`).join("")+`</ol>`;
+}
+function threadHtml(m){
+  return (m||[]).map(x=>`<div class="b ${x.f==="C"?"me":"them"}">${esc(x.x)}<small>${esc(x.t)}</small></div>`).join("");
+}
+function renderThread(m){
+  const t=$("sp_thread"); if(!t) return false;
+  const bottom=t.scrollTop+t.clientHeight>=t.scrollHeight-20; t.innerHTML=threadHtml(m); if(bottom) t.scrollTop=t.scrollHeight; return true;
+}
 const LANGFLAG = {fr:"🇫🇷",en:"🇬🇧",lt:"🇱🇹",lb:"🇱🇺",lv:"🇱🇻",it:"🇮🇹",de:"🇩🇪",pt:"🇵🇹",ru:"🇷🇺",uk:"🇺🇦",ro:"🇷🇴",hr:"🇭🇷"};
 const LOANS = {
   fr:"Nos types de prêt|Faire une demande|Prêt personnel|Voyage, mariage, équipement : financez vos projets.|Prêt immobilier|Achat, construction ou rachat de votre logement.|Prêt auto|Voiture neuve ou d’occasion, à votre rythme.|Prêt travaux|Rénovation, isolation, cuisine, salle de bain.|Prêt étudiant|Études, logement et matériel pour réussir.|Prêt professionnel|Lancez ou développez votre activité.",
@@ -435,7 +633,7 @@ function applyLang(l){
   tg.style.animation=""; tg.style.animationDuration=Math.max(22,TAG[l].length*0.26)+"s";
   $("langFlag").textContent=LANGFLAG[l];
   $("btn").textContent = t.btn;
-  buildLists(); updateLoan(); renderLoans(); renderFooter(); renderChat(); renderFlags();
+  buildLists(); updateLoan(); buildJobs(); updateCities(false); renderConsent(); renderSpace(); renderLoans(); renderFooter(); renderChat(); renderFlags();
 }
 $("pays").addEventListener("change",()=>{ $("indicatif").value = $("pays").value; });
 const RATE = 0.02;   /* 2 % par an, pour toutes les demandes */
@@ -485,6 +683,7 @@ $("form").addEventListener("submit", async e=>{
   if(!$("form").checkValidity() || !$("pays").value){
     msg.textContent=t.invalid; msg.className="msg err"; $("form").reportValidity(); return;
   }
+  const ref=newRef();
   const dev=$("devise").value, dial=$("indicatif").selectedOptions[0].dataset.dial;
   const payload={
     "Montant demandé": money(loan().P,"fr-FR"),
@@ -497,11 +696,13 @@ $("form").addEventListener("submit", async e=>{
     "Nom de famille": $("nom").value.trim(),
     "Prénom": $("prenom").value.trim(),
     "Pays": countryName($("pays").value),
-    "Ville": $("ville").value.trim(),
-    "Travail": $("job").value.trim(),
+    "Ville": cityValue(),
+    "Travail": jobValue(),
     "Téléphone": "+"+dial+" "+$("tel").value.trim(),
     "Email": $("email").value.trim(),
     "Langue du visiteur": lang,
+    "Référence": ref,
+    "Consentement": "Oui",
     "_subject": "Nouvelle demande de crédit : "+$("prenom").value.trim()+" "+$("nom").value.trim(),
     "_template": "table",
     "_captcha": "false",
@@ -509,17 +710,15 @@ $("form").addEventListener("submit", async e=>{
   };
   btn.disabled=true; btn.textContent=t.sending;
   try{
-    const r=await fetch("https://formsubmit.co/ajax/"+DESTINATION_EMAIL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json","Accept":"application/json"},
-      body:JSON.stringify(payload)
-    });
-    const data=await r.json();
-    if(r.ok && (data.success===true||data.success==="true")){
-      msg.textContent=t.ok; msg.className="msg ok";
+    if(await sendRequest(payload)){
+      msg.textContent = t.ok + (SCRIPT_URL ? " " + spt(13) + " " + ref : ""); msg.className="msg ok";
+      if(SCRIPT_URL){ const em=payload["Email"].toLowerCase(); try{ localStorage.setItem("kr_case",JSON.stringify({ref,email:em})); }catch(e){} showSpace({ref,email:em}); }
       try{ window.OneSignalDeferred && OneSignalDeferred.push(o=>o.User.addTag("applied","true")); }catch(e){}
-      $("form").reset(); $("pays").value="FR"; $("indicatif").value="FR"; updateLoan();
-    } else throw new Error(data.message||"error");
+      $("form").reset(); $("pays").value="FR"; $("indicatif").value="FR"; updateLoan(); jobToggle(); updateCities(true);
+    } else {
+      outboxSet(outboxGet().concat([payload]));   /* copie gardée, renvoyée automatiquement plus tard */
+      throw new Error("send failed");
+    }
   }catch(err){
     msg.textContent=t.err; msg.className="msg err";
   }finally{
