@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#102b45">
 <title>KREDITAS | Solutions de financement</title>
-<style>
+<style> 
+const demandeButton = <a href="formulaire.html">Faire une demande de crédit</a>
 :root{--navy:#102b45;--blue:#176b91;--gold:#d9ad55;--bg:#edf3f8;--ink:#26384a;--muted:#68798a;--white:#fff;--teal:#2b8795}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#f7f9fc 0%,#eaf1f7 48%,#f5f7fa 100%);color:var(--ink);line-height:1.6}
-header{position:sticky;top:0;z-index:20;background:linear-gradient(110deg,#ffffff 0%,#f4f8fb 70%,#edf5f6 100%);box-shadow:0 5px 24px #102b4520;border-bottom:3px solid var(--gold)}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(110deg,#ffffff 0%,#f4f8fb 70%,#edf5f6 100%);box-shadow:0 5px 24px #102b4520;border-bottom:<a href="formulaire.html">Faire une demande de crédit</a>3px solid var(--gold)}
 .topbar{max-width:1180px;margin:auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
 .logo{font-size:34px;font-weight:950;letter-spacing:1.4px;color:var(--navy);text-decoration:none;text-shadow:0 2px 0 #dce7ef}.logo span{color:var(--gold)}
 .head-right{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
@@ -224,7 +225,7 @@ const COUNTRY_CODES = ("BJ:229,TG:228,CI:225,SN:221,ML:223,BF:226,NE:227,GN:224,
 
 const flagFor = iso =>
   String.fromCodePoint(...[...iso].map(ch => 127397 + ch.charCodeAt(0)));
-
+const demandeButton = <a href="formulaire.html">Faire une demande de crédit</a>
 const countrySelect = document.getElementById("country");
 const dialSelect = document.getElementById("dialCode");
 const langSelect = document.getElementById("language");
@@ -443,7 +444,8 @@ form.addEventListener("submit", async event => {
     formStatus.dataset.state = "error";
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = originalButtonText;
+    submitButton.textContent = <a href="formulaire.html">Faire une demande de crédit</a>
+     originalButtonText;
   }
 });
 </script>
