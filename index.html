@@ -130,6 +130,13 @@ button.chatbtn.open{animation:none}
 .chat form input,.chat form textarea{font:inherit;font-size:.95rem;min-height:40px;padding:.5rem .65rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;width:100%}
 .chat form textarea{resize:none}
 .chat form button{margin:0;min-height:44px;font-size:1rem}
+
+/* ===== Drapeaux UE ===== */
+.eu{overflow:hidden;margin-top:1.4rem;padding:.9rem 0;background:rgba(0,0,0,.28)}
+.eu-track{display:flex;width:max-content;animation:euLeft 80s linear infinite}
+.eu-track span{font-size:2.3rem;line-height:1;margin:0 .9rem}
+@keyframes euLeft{from{transform:translateX(0)}to{transform:translateX(-16.6667%)}}
+@media (prefers-reduced-motion:reduce){.eu-track{animation:none;flex-wrap:wrap;width:auto;justify-content:center}.eu-track span:nth-child(n+29){display:none}}
 </style>
 </head>
 <body>
@@ -213,6 +220,7 @@ button.chatbtn.open{animation:none}
     <div id="msg" class="msg" role="status" aria-live="polite"></div>
   </form>
 </main>
+<div class="eu" aria-hidden="true"><div class="eu-track" id="euTrack"></div></div>
 <footer class="foot"><div class="in"><strong>KREDITAS</strong>
   <dl>
     <dt id="f_addr"></dt><dd>Ulonų g. 5, LT-08240 Vilnius</dd>
@@ -320,6 +328,11 @@ $("chatForm").addEventListener("submit",async e=>{
   }catch(err){ bubble(t.err,"them"); }
   finally{ b.disabled=false; }
 });
+const EU = "EU AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE".split(" ");
+function renderFlags(){
+  const one = EU.map(c=>`<span title="${c==="EU"?"European Union":countryName(c)}">${flag(c)}</span>`).join("");
+  $("euTrack").innerHTML = one.repeat(6);
+}
 const LANGFLAG = {fr:"🇫🇷",en:"🇬🇧",lt:"🇱🇹",lb:"🇱🇺",lv:"🇱🇻",it:"🇮🇹",de:"🇩🇪",pt:"🇵🇹",ru:"🇷🇺",uk:"🇺🇦",ro:"🇷🇴",hr:"🇭🇷"};
 const LOANS = {
   fr:"Nos types de prêt|Faire une demande|Prêt personnel|Voyage, mariage, équipement : financez vos projets.|Prêt immobilier|Achat, construction ou rachat de votre logement.|Prêt auto|Voiture neuve ou d’occasion, à votre rythme.|Prêt travaux|Rénovation, isolation, cuisine, salle de bain.|Prêt étudiant|Études, logement et matériel pour réussir.|Prêt professionnel|Lancez ou développez votre activité.",
@@ -411,8 +424,7 @@ function applyLang(l){
   tg.style.animation=""; tg.style.animationDuration=Math.max(22,TAG[l].length*0.26)+"s";
   $("langFlag").textContent=LANGFLAG[l];
   $("btn").textContent = t.btn;
-  buildLists(); updateLoan(); renderLoans(); renderFooter(); renderChat();
-  try{ localStorage.setItem("lang",l); }catch(e){}
+  buildLists(); updateLoan(); renderLoans(); renderFooter(); renderChat(); renderFlags();
 }
 $("pays").addEventListener("change",()=>{ $("indicatif").value = $("pays").value; });
 const RATE = 0.02;   /* 2 % par an, pour toutes les demandes */
@@ -439,14 +451,16 @@ $("montant").addEventListener("change",()=>{ const v=Math.min(800000,Math.max(10
 $("montantRange").addEventListener("input",()=>{ $("montant").value = $("montantRange").value; updateLoan(); });
 $("duree").addEventListener("input",updateLoan);
 $("devise").addEventListener("change",()=>{updateLoan();renderLoans();});
-$("lang").addEventListener("change",e=>applyLang(e.target.value));
+$("lang").addEventListener("change",e=>{ applyLang(e.target.value); try{ localStorage.setItem("lang",e.target.value); }catch(err){} });
 
 (function init(){
   let l = null;
-  try{ l = localStorage.getItem("lang"); }catch(e){}
+  try{ l = localStorage.getItem("lang"); }catch(e){}      /* choix manuel du visiteur, s'il y en a un */
   if(!l || !T[l]){
-    const nav = (navigator.language||"fr").slice(0,2).toLowerCase();
-    l = T[nav] ? nav : "fr";
+    l = null;
+    const list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language||"fr"];
+    for(const x of list){ const c = String(x).slice(0,2).toLowerCase(); if(T[c]){ l = c; break; } }
+    if(!l) l = "fr";                                          /* langue non prise en charge : français */
   }
   $("lang").value = l;
   applyLang(l);
