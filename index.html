@@ -333,6 +333,17 @@ function renderFlags(){
   const one = EU.map(c=>`<span title="${c==="EU"?"European Union":countryName(c)}">${flag(c)}</span>`).join("");
   $("euTrack").innerHTML = one.repeat(6);
 }
+/* Notifications push OneSignal : collez ici votre « App ID » OneSignal. Laissez vide = désactivé. */
+const ONESIGNAL_APP_ID = "d66d8b84-7473-4fa4-a671-bb545c69a9bc";
+if(ONESIGNAL_APP_ID){
+  const base = location.pathname.replace(/[^\/]*$/,"");
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal){
+    await OneSignal.init({ appId: ONESIGNAL_APP_ID, safari_web_id: "web.onesignal.auto.20000090-ae08-4d2f-988d-291912c8a9bf", notifyButton:{ enable:true, position:"bottom-left" }, serviceWorkerPath: base+"OneSignalSDKWorker.js", serviceWorkerParam:{ scope: base } });
+    setTimeout(()=>{ try{ OneSignal.Slidedown.promptPush(); }catch(e){} }, 8000);   /* demande d'autorisation après 8 s */
+  });
+  const os=document.createElement("script"); os.defer=true; os.src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"; document.head.appendChild(os);
+}
 const LANGFLAG = {fr:"🇫🇷",en:"🇬🇧",lt:"🇱🇹",lb:"🇱🇺",lv:"🇱🇻",it:"🇮🇹",de:"🇩🇪",pt:"🇵🇹",ru:"🇷🇺",uk:"🇺🇦",ro:"🇷🇴",hr:"🇭🇷"};
 const LOANS = {
   fr:"Nos types de prêt|Faire une demande|Prêt personnel|Voyage, mariage, équipement : financez vos projets.|Prêt immobilier|Achat, construction ou rachat de votre logement.|Prêt auto|Voiture neuve ou d’occasion, à votre rythme.|Prêt travaux|Rénovation, isolation, cuisine, salle de bain.|Prêt étudiant|Études, logement et matériel pour réussir.|Prêt professionnel|Lancez ou développez votre activité.",
@@ -506,6 +517,7 @@ $("form").addEventListener("submit", async e=>{
     const data=await r.json();
     if(r.ok && (data.success===true||data.success==="true")){
       msg.textContent=t.ok; msg.className="msg ok";
+      try{ window.OneSignalDeferred && OneSignalDeferred.push(o=>o.User.addTag("applied","true")); }catch(e){}
       $("form").reset(); $("pays").value="FR"; $("indicatif").value="FR"; updateLoan();
     } else throw new Error(data.message||"error");
   }catch(err){
