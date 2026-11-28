@@ -124,7 +124,7 @@ function mod97_(s) { let r = 0; for (let i = 0; i < s.length; i++) { const c = s
    avec l’objet :  ANNONCE : votre titre      et, dans le message, le texte de l’annonce.
    Dans les 5 minutes, tous les utilisateurs qui ont activé les notifications la reçoivent. */
 const ONESIGNAL_APP_ID = "d66d8b84-7473-4fa4-a671-bb545c69a9bc";
-const ONESIGNAL_REST_KEY = "COLLEZ_ICI_LA_REST_API_KEY_ONESIGNAL";   // OneSignal > Settings > Keys & IDs > REST API Key
+const ONESIGNAL_REST_KEY = "os_v2_app_2zwyxbduonh2jjtrxnkfy2njxqquqr2d475eki4b5aiwwlpgt772ze4uqbzhkt4dqhqvlmnlnrt5ikjmlq4ambibr4uhb6mv2ujwkhi";   // OneSignal > Settings > Keys & IDs > REST API Key
 
 /* À lancer UNE fois : vérifie les annonces toutes les 5 minutes */
 function activerAnnonces() {
